@@ -20,18 +20,21 @@ def calculate():
         i = 1
     else:
         i = 0
-        print(int(dic_type_lack[type_lack.get()][1]))
-        print(int(dic_type_lack[type_lack.get()]))
-    result = int(dic_all_prices["adjustment"][i]) + int(dic_all_prices["drum"][i]) + (
-            int(entry_length.get()) * int(entry_width.get()) * int(entry_percents.get()) / 100000000 * int(
-        dic_type_lack[type_lack.get()][1]) * int(dic_type_lack[type_lack.get][0]) * int(entry_amount.get()))
+    result = float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
+                float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
+            dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
+            entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
+            dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+            entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
+            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))
 
     print(result)
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
-dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [8.5, 10.5], "drum": [220, 300], "film": [35, 70],
-                  "salary": [25, 25], "printing": [0.14, 0.2], "speed": [250, 200], "adjustment": [85, 95]}
+dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [10.5, 10.5], "drum": [220, 300], "film": [35, 70],
+                  "salary": [25, 25], "printing": [0.14, 0.2], "speed": [250, 200], "adjustment_cost": [85, 95],
+                  "adjustment_time": [0.75, 0.75]}
 
 # Словарь для типов лакировки. Ключ - тип лакировки. Элементы словаря - стоимость  1кг лака, расход лака на 1м.кв.
 dic_type_lack = {"УФ-лак": [255, 0.012], "УФ-лак с поднятием": [800, 0.012], "Глиттер + УФ-лак (1:5)": [310, 0.165],
