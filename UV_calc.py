@@ -24,7 +24,8 @@ def calculate():
             entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
             dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
             entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
-            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))) * float(
+            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
+        dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])) * float(
         dic_type_client[type_client.get()])
     entry_result_cost_all_amount.delete(0, END)
     entry_result_cost_one_sheet.delete(0, END)
@@ -52,7 +53,7 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
 dic_films_reused = {"Выводим новую пленку": 1, "Повторная работа или плёнка заказчика": 0}
 
 root = Tk()
-root.geometry("500x500")
+root.geometry("600x500")
 root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
