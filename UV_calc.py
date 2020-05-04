@@ -5,7 +5,6 @@ from tkinter import *
 def set_format(f):
     global length_sheet
     global width_sheet
-    global dic_formats
     length_sheet = dic_formats[f][1]
     width_sheet = dic_formats[f][0]
     entry_length.delete(0, END)
@@ -15,7 +14,6 @@ def set_format(f):
 
 
 def calculate():
-    global result
     if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
         i = 1
     else:
@@ -30,8 +28,6 @@ def calculate():
         dic_type_client[type_client.get()])
     entry_result_cost_all_amount.delete(0, END)
     entry_result_cost_one_sheet.delete(0, END)
-    # result = f"{result:.2f}"
-
     entry_result_cost_all_amount.insert(0, f"{result:.2f}")  # Cт-ть лакировки с фиксацией двух знаков после запятой
     entry_result_cost_one_sheet.insert(0, f"{result / float(entry_amount.get()):.2f}")
 
@@ -57,7 +53,7 @@ dic_films_reused = {"Выводим новую пленку": 1, "Повторн
 
 root = Tk()
 root.geometry("500x500")
-# root.iconbitmap("logo_timpack_200px_qhT_icon.ico")
+root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
 frame_1 = Frame(root, width=600)
@@ -87,8 +83,8 @@ text_type_client = Label(frame_1, text="Тип Клиента:")
 text_amount = Label(frame_1, text="Тираж, листов:")
 text_percents = Label(frame_1, text="% заполнения")
 text_format = Label(frame_2, text="Формат печатного листа")
-text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_width = Label(frame_2, text="Ширина, мм:", justify=RIGHT)
+text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_cost_all_amount = Label(frame_3, text="Стоимость лакировки всего тиража, грн:", justify=RIGHT)
 text_cost_one_sheet = Label(frame_3, text="Стоимость лакировки одного листа, грн:", justify=RIGHT)
 
@@ -96,22 +92,22 @@ text_type_client.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_amount.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 text_percents.grid(row=3, column=0, padx=5, pady=5, sticky=W)
 text_format.grid(row=0, column=0, padx=5, pady=5, columnspan=2)
-text_length.grid(row=1, column=0, padx=5, pady=5, sticky=W)
-text_width.grid(row=2, column=0, padx=5, pady=5, sticky=W)
+text_width.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+text_length.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 text_cost_all_amount.grid(row=0, column=1, padx=5, pady=5)
 text_cost_one_sheet.grid(row=1, column=1, padx=5, pady=5)
 
 entry_amount = Entry(frame_1, width=10, justify=RIGHT)
 entry_percents = Entry(frame_1, width=10, justify=RIGHT)
-entry_length = Entry(frame_2, width=10, justify=RIGHT)
 entry_width = Entry(frame_2, width=10, justify=RIGHT)
+entry_length = Entry(frame_2, width=10, justify=RIGHT)
 entry_result_cost_all_amount = Entry(frame_3, width=10, justify=RIGHT)
 entry_result_cost_one_sheet = Entry(frame_3, width=10, justify=RIGHT)
 
 entry_amount.grid(row=2, column=1, padx=5, pady=5)
 entry_percents.grid(row=3, column=1, padx=5, pady=5)
-entry_length.grid(row=1, column=1, padx=5, pady=5)
-entry_width.grid(row=2, column=1, padx=5, pady=5)
+entry_width.grid(row=1, column=1, padx=5, pady=5)
+entry_length.grid(row=2, column=1, padx=5, pady=5)
 entry_result_cost_all_amount.grid(row=0, column=2, padx=5, pady=5)
 entry_result_cost_one_sheet.grid(row=1, column=2, padx=5, pady=5)
 
