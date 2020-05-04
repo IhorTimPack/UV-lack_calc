@@ -19,18 +19,23 @@ def calculate():
     else:
         i = 0
     result = (float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
-                float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
-            dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
-            entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
-            dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
-            entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
-            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
+            float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
+        dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
+        entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
+        dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+        entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
+        dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
         dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])) * float(
         dic_type_client[type_client.get()])
     entry_result_cost_all_amount.delete(0, END)
     entry_result_cost_one_sheet.delete(0, END)
     entry_result_cost_all_amount.insert(0, f"{result:.2f}")  # Cт-ть лакировки с фиксацией двух знаков после запятой
     entry_result_cost_one_sheet.insert(0, f"{result / float(entry_amount.get()):.2f}")
+
+    report = f"Категория заказчика:\t'{type_client.get()}'. + {int(float(dic_type_client[type_client.get()]) * 100 - 100)}% к минимльной цене\nТип лака:\t\t'{type_lack.get()}'\nТираж:"
+
+    text_summary_result.delete(0.0, END)
+    text_summary_result.insert(END, report)
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
@@ -50,19 +55,21 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
                """1/6 B1""": [333, 350], "A2": [450, 640], "B2": [500, 700]}
 
 # Словарь. Считать или нет стоимость вывода пленок.
-dic_films_reused = {"Выводим новую пленку": 1, "Повторная работа или плёнка заказчика": 0}
+dic_films_reused = {"Выводим новую пленку": 1, "Повторная работа / плёнка заказчика": 0}
 
 root = Tk()
-root.geometry("600x500")
-root.iconbitmap("TimPack.ico")
+root.geometry("640x480")
+# root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
-frame_1 = Frame(root, width=600)
-frame_2 = Frame(root, width=300)
-frame_3 = Frame(root, width=300)
+frame_1 = Frame(root, width=320)
+frame_2 = Frame(root, width=320)
+frame_3 = Frame(root, width=320)
+frame_4 = Frame(root, width=320)
 frame_1.grid(row=0, column=0)
 frame_2.grid(row=0, column=1)
 frame_3.grid(row=1, column=0, columnspan=2)
+frame_4.grid(row=2, column=0, columnspan=2)
 
 type_lack = StringVar()  # Раскрывающийся список для выбора типа лакировки
 type_lack.set("УФ-лак")
@@ -88,6 +95,7 @@ text_width = Label(frame_2, text="Ширина, мм:", justify=RIGHT)
 text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_cost_all_amount = Label(frame_3, text="Стоимость лакировки всего тиража, грн:", justify=RIGHT)
 text_cost_one_sheet = Label(frame_3, text="Стоимость лакировки одного листа, грн:", justify=RIGHT)
+text_summary_result = Text(frame_4, height=15, width=60)
 
 text_type_client.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_amount.grid(row=2, column=0, padx=5, pady=5, sticky=W)
@@ -97,6 +105,7 @@ text_width.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_length.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 text_cost_all_amount.grid(row=0, column=1, padx=5, pady=5)
 text_cost_one_sheet.grid(row=1, column=1, padx=5, pady=5)
+text_summary_result.grid(row=0, column=0, padx=5, pady=5)
 
 entry_amount = Entry(frame_1, width=10, justify=RIGHT)
 entry_percents = Entry(frame_1, width=10, justify=RIGHT)
