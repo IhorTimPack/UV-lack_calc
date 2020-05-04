@@ -20,15 +20,20 @@ def calculate():
         i = 1
     else:
         i = 0
-    result = float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
+    result = (float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
                 float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
             dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
             entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
             dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
             entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
-            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))
+            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))) * float(
+        dic_type_client[type_client.get()])
+    entry_result_cost_all_amount.delete(0, END)
+    entry_result_cost_one_sheet.delete(0, END)
+    # result = f"{result:.2f}"
 
-    print(result)
+    entry_result_cost_all_amount.insert(0, f"{result:.2f}")  # Cт-ть лакировки с фиксацией двух знаков после запятой
+    entry_result_cost_one_sheet.insert(0, f"{result / float(entry_amount.get()):.2f}")
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
@@ -69,7 +74,7 @@ button_type_lack = OptionMenu(frame_1, type_lack, *dic_type_lack)
 button_type_lack.grid(row=0, column=0, columnspan=2, padx=2, pady=2, sticky="WE")
 
 type_client = StringVar()  # Раскрывающийся спсисок для выбора типа клиента
-type_client.set("преимиум")
+type_client.set("премиум")
 button_type_client = OptionMenu(frame_1, type_client, *dic_type_client)  # Кнопка для выбора типа клиента
 button_type_client.grid(row=1, column=1, padx=2, pady=2, sticky="WE")
 
@@ -86,8 +91,6 @@ text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_width = Label(frame_2, text="Ширина, мм:", justify=RIGHT)
 text_cost_all_amount = Label(frame_3, text="Стоимость лакировки всего тиража, грн:", justify=RIGHT)
 text_cost_one_sheet = Label(frame_3, text="Стоимость лакировки одного листа, грн:", justify=RIGHT)
-text_result_cost_all_amount = Label(frame_3, text="Здесь будет переменная_1", relief=GROOVE)
-text_result_cost_one_sheet = Label(frame_3, text="Здесь будет переменная_2", relief=RIDGE)
 
 text_type_client.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_amount.grid(row=2, column=0, padx=5, pady=5, sticky=W)
@@ -97,18 +100,20 @@ text_length.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_width.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 text_cost_all_amount.grid(row=0, column=1, padx=5, pady=5)
 text_cost_one_sheet.grid(row=1, column=1, padx=5, pady=5)
-text_result_cost_all_amount.grid(row=0, column=2, padx=5, pady=5)
-text_result_cost_one_sheet.grid(row=1, column=2, padx=5, pady=5)
 
-entry_amount = Entry(frame_1, text="Какой тираж?", width=10)
-entry_percents = Entry(frame_1, width=10)
-entry_length = Entry(frame_2, width=10)
-entry_width = Entry(frame_2, width=10)
+entry_amount = Entry(frame_1, width=10, justify=RIGHT)
+entry_percents = Entry(frame_1, width=10, justify=RIGHT)
+entry_length = Entry(frame_2, width=10, justify=RIGHT)
+entry_width = Entry(frame_2, width=10, justify=RIGHT)
+entry_result_cost_all_amount = Entry(frame_3, width=10, justify=RIGHT)
+entry_result_cost_one_sheet = Entry(frame_3, width=10, justify=RIGHT)
 
 entry_amount.grid(row=2, column=1, padx=5, pady=5)
 entry_percents.grid(row=3, column=1, padx=5, pady=5)
 entry_length.grid(row=1, column=1, padx=5, pady=5)
 entry_width.grid(row=2, column=1, padx=5, pady=5)
+entry_result_cost_all_amount.grid(row=0, column=2, padx=5, pady=5)
+entry_result_cost_one_sheet.grid(row=1, column=2, padx=5, pady=5)
 
 button_A4 = Button(frame_2, text="A4", command=lambda: set_format("A4"), width=5)
 button_B4 = Button(frame_2, text="B4", command=lambda: set_format("B4"), width=5)
