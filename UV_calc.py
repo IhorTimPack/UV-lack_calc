@@ -3,14 +3,14 @@ from tkinter import *
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами.
 def set_format(f):
-    global length_sheet
     global width_sheet
-    length_sheet = dic_formats[f][1]
+    global length_sheet
     width_sheet = dic_formats[f][0]
-    entry_length.delete(0, END)
+    length_sheet = dic_formats[f][1]
     entry_width.delete(0, END)
-    entry_length.insert(0, length_sheet)
+    entry_length.delete(0, END)
     entry_width.insert(0, width_sheet)
+    entry_length.insert(0, length_sheet)
 
 
 def calculate():
@@ -32,7 +32,10 @@ def calculate():
     entry_result_cost_all_amount.insert(0, f"{result:.2f}")  # Cт-ть лакировки с фиксацией двух знаков после запятой
     entry_result_cost_one_sheet.insert(0, f"{result / float(entry_amount.get()):.2f}")
 
-    report = f"Категория заказчика:\t'{type_client.get()}'. + {int(float(dic_type_client[type_client.get()]) * 100 - 100)}% к минимльной цене\nТип лака:\t\t'{type_lack.get()}'\nТираж:"
+    report = f"""Категория заказчика:\t'{type_client.get()}'. (+{int(float(dic_type_client[type_client.get()]) * 100 - 
+        100)}% к минимльной цене)\nТип лака:\t\t'{type_lack.get()}'\nТираж:\t{int(entry_amount.get()
+        )} лист.\nШирина листа:\t{int(entry_width.get())} мм.\nДлина листа:\t{int(entry_length.get())
+        }мм.\nЗаполнение лаком печатного листа: {int(entry_percents.get())}%"""
 
     text_summary_result.delete(0.0, END)
     text_summary_result.insert(END, report)
@@ -59,7 +62,7 @@ dic_films_reused = {"Выводим новую пленку": 1, "Повторн
 
 root = Tk()
 root.geometry("640x480")
-# root.iconbitmap("TimPack.ico")
+root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
 frame_1 = Frame(root, width=320)
@@ -95,7 +98,7 @@ text_width = Label(frame_2, text="Ширина, мм:", justify=RIGHT)
 text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_cost_all_amount = Label(frame_3, text="Стоимость лакировки всего тиража, грн:", justify=RIGHT)
 text_cost_one_sheet = Label(frame_3, text="Стоимость лакировки одного листа, грн:", justify=RIGHT)
-text_summary_result = Text(frame_4, height=15, width=60)
+text_summary_result = Text(frame_4, height=15, width=60, bg="#EEEEEE")
 
 text_type_client.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_amount.grid(row=2, column=0, padx=5, pady=5, sticky=W)
