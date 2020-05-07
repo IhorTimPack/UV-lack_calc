@@ -32,11 +32,19 @@ def calculate():
     entry_result_cost_all_amount.insert(0, f"{result:.2f}")  # Cт-ть лакировки с фиксацией двух знаков после запятой
     entry_result_cost_one_sheet.insert(0, f"{result / float(entry_amount.get()):.2f}")
 
-    report = f"""Категория заказчика:\t'{type_client.get()}'. (+{int(float(dic_type_client[type_client.get()]) * 100 - 
-        100)}% к минимльной цене)\nТип лака:\t\t'{type_lack.get()}'\nТираж:\t{int(entry_amount.get()
-        )} лист.\nШирина листа:\t{int(entry_width.get())} мм.\nДлина листа:\t{int(entry_length.get())
-        }мм.\nЗаполнение лаком печатного листа: {int(entry_percents.get())}%"""
-
+    report = f"""Категория заказчика: '{type_client.get()}'. (+{int(float(dic_type_client[type_client.get()]) * 100 - 
+        100)}% к минимльной цене)\nТип лака: '{type_lack.get()}'\nТираж: {int(entry_amount.get()
+        )} лист.\nШирина листа: {int(entry_width.get())} мм.\nДлина листа:\t{int(entry_length.get())
+        } мм.\nЗаполнение лаком печатного листа: {int(entry_percents.get())} %\nСтоимость лакировки тиража: {
+        f"{result:.2f}"} грн.\nСтоимость лакировки одного листа: {f"{result / float(entry_amount.get()):.2f}"} грн."""
+    report_type_client_var.set(type_client.get())
+    report_type_lack_var.set(type_lack.get())
+    report_amount_var.set(entry_amount.get())
+    report_width_var.set(entry_width.get())
+    report_length_var.set(entry_length.get())
+    report_percents_var.set(entry_percents.get())
+    report_cost_all_amount_var.set(f"{result:.2f}")
+    report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.2f}")
     text_summary_result.delete(0.0, END)
     text_summary_result.insert(END, report)
 
@@ -61,7 +69,7 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
 dic_films_reused = {"Выводим новую пленку": 1, "Повторная работа / плёнка заказчика": 0}
 
 root = Tk()
-root.geometry("640x480")
+root.geometry("640x600")
 root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
@@ -69,10 +77,12 @@ frame_1 = Frame(root, width=320)
 frame_2 = Frame(root, width=320)
 frame_3 = Frame(root, width=320)
 frame_4 = Frame(root, width=320)
+frame_5 = Frame(root, width=320)
 frame_1.grid(row=0, column=0)
 frame_2.grid(row=0, column=1)
 frame_3.grid(row=1, column=0, columnspan=2)
 frame_4.grid(row=2, column=0, columnspan=2)
+frame_5.grid(row=3, column=0, columnspan=2)
 
 type_lack = StringVar()  # Раскрывающийся список для выбора типа лакировки
 type_lack.set("УФ-лак")
@@ -90,7 +100,7 @@ film_reused.set("Выводим новую пленку")
 button_film_reused = OptionMenu(frame_2, film_reused, *dic_films_reused)  # Кнопка для выбора типа клиента
 button_film_reused.grid(row=3, column=0, columnspan=2, padx=2, pady=2, sticky="WE")
 
-text_type_client = Label(frame_1, text="Тип Клиента:")
+text_type_client = Label(frame_1, text="Тип клиента:")
 text_amount = Label(frame_1, text="Тираж, листов:")
 text_percents = Label(frame_1, text="% заполнения")
 text_format = Label(frame_2, text="Формат печатного листа")
@@ -98,7 +108,49 @@ text_width = Label(frame_2, text="Ширина, мм:", justify=RIGHT)
 text_length = Label(frame_2, text="Длина, мм:", justify=RIGHT)
 text_cost_all_amount = Label(frame_3, text="Стоимость лакировки всего тиража, грн:", justify=RIGHT)
 text_cost_one_sheet = Label(frame_3, text="Стоимость лакировки одного листа, грн:", justify=RIGHT)
-text_summary_result = Text(frame_4, height=15, width=60, bg="#EEEEEE")
+text_summary_result = Text(frame_4, height=8, width=60, bg="#EEEEEE")
+
+report_type_client_name = Label(frame_5, text="Тип клиента:")
+report_type_client_var = StringVar()
+report_type_client = Label(frame_5, textvariable=report_type_client_var, font=16)
+report_type_lack_name = Label(frame_5, text="Тип лака:")
+report_type_lack_var = StringVar()
+report_type_lack = Label(frame_5, textvariable=report_type_lack_var, font=16)
+report_amount_name = Label(frame_5, text="Тираж:")
+report_amount_var = StringVar()
+report_amount = Label(frame_5, textvariable=report_amount_var, font=16)
+report_width_name = Label(frame_5, text="Ширина листа:")
+report_width_var = StringVar()
+report_width = Label(frame_5, textvariable=report_width_var, font=16)
+report_length_name = Label(frame_5, text="Длина листа:")
+report_length_var = StringVar()
+report_length = Label(frame_5, textvariable=report_length_var, font=16)
+report_percents_name = Label(frame_5, text="Процент заполнения листа:")
+report_percents_var = StringVar()
+report_percents = Label(frame_5, textvariable=report_percents_var, font=16)
+report_cost_all_amount_name = Label(frame_5, text="Стоимость лакировки тиража:")
+report_cost_all_amount_var = StringVar()
+report_cost_all_amount = Label(frame_5, textvariable=report_cost_all_amount_var, font=16)
+report_cost_one_sheet_name = Label(frame_5, text="Стоимость лакировки одного листа:")
+report_cost_one_sheet_var = StringVar()
+report_cost_one_sheet = Label(frame_5, textvariable=report_cost_one_sheet_var, font=16)
+
+report_type_client_name.grid(row=0, column=0)
+report_type_client.grid(row=0, column=1)
+report_type_lack_name.grid(row=1, column=0)
+report_type_lack.grid(row=1, column=1)
+report_amount_name.grid(row=2, column=0)
+report_amount.grid(row=2, column=1)
+report_width_name.grid(row=3, column=0)
+report_width.grid(row=3, column=1)
+report_length_name.grid(row=4, column=0)
+report_length.grid(row=4, column=1)
+report_percents_name.grid(row=5, column=0)
+report_percents.grid(row=5, column=1)
+report_cost_all_amount_name.grid(row=6, column=0)
+report_cost_all_amount.grid(row=5, column=1)
+report_cost_one_sheet_name.grid(row=6, column=0)
+report_cost_one_sheet.grid(row=6, column=1)
 
 text_type_client.grid(row=1, column=0, padx=5, pady=5, sticky=W)
 text_amount.grid(row=2, column=0, padx=5, pady=5, sticky=W)
@@ -109,6 +161,8 @@ text_length.grid(row=2, column=0, padx=5, pady=5, sticky=W)
 text_cost_all_amount.grid(row=0, column=1, padx=5, pady=5)
 text_cost_one_sheet.grid(row=1, column=1, padx=5, pady=5)
 text_summary_result.grid(row=0, column=0, padx=5, pady=5)
+
+
 
 entry_amount = Entry(frame_1, width=10, justify=RIGHT)
 entry_percents = Entry(frame_1, width=10, justify=RIGHT)
