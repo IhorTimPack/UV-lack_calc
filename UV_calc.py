@@ -27,6 +27,41 @@ def calculate():
         dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
         dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])) * float(
         dic_type_client[type_client.get()])
+    x0 = 20
+    y0 = 210
+    x_max = 600
+    y_max = 200
+    x_begin = x0
+    y_begin = y0
+    scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max
+    scale_y = y_max / (((float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
+            float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
+        dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
+        entry_amount.get()) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
+        dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+        entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
+        dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
+        dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])) * float(
+        dic_type_client[type_client.get()])) * 2)
+    graph_amount = scale_x_graph_amount
+    canvas_graph.delete("all")
+    canvas_graph.create_line(20, 230, 20, 20, width=1, arrow=LAST)
+    canvas_graph.create_line(10, 220, 620, 220, width=1, arrow=LAST)
+    for j in range(1, 601):
+        result_graph = (float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
+                float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
+            dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
+            graph_amount) + (float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i]) + float(
+            dic_all_prices["salary"][i])) * float(graph_amount) / float(dic_all_prices["speed"][i]) + float(
+            graph_amount) * float(dic_all_prices["printing"][i]) + float(
+            dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])) + float(
+            dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])) * float(
+            dic_type_client[type_client.get()])
+        canvas_graph.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
+        print("--x_begin:", x_begin, "--y_begin:", y_begin, "--x_begin + 1:", x_begin + 1, "--y0 result_graph * scale_y:", y0 - result_graph * scale_y)
+        graph_amount += scale_x_graph_amount
+        x_begin += 1
+        y_begin = y0 - result_graph * scale_y
 
 
     report_type_client_var.set(type_client.get())
@@ -198,11 +233,7 @@ button_A2.grid(row=3, column=2, padx=5, pady=5)
 button_B2.grid(row=3, column=3, padx=5, pady=5)
 button_calculate.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
-canvas_graph = Canvas(frame_4, width=630, height=250, bg="white")
+canvas_graph = Canvas(frame_4, width=630, height=250, bg="yellow")
 canvas_graph.grid(row=0, column=0)
-
-canvas_graph.create_line(20, 220, 20, 20, width=1, arrow=LAST)
-canvas_graph.create_line(10, 210, 610, 210, width=1, arrow=LAST)
-
 
 root.mainloop()
