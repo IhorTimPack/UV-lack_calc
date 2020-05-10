@@ -51,7 +51,21 @@ def calculate():
     else:
         i = 0
     result = calculate_result(i, entry_amount.get())
+    draw_graph_all_amount(i)  # Отрисовка графика ст-ти тиража к размеру тиража
+    draw_graph_one_sheet(i)  # Отрисовка графика ст-ти одного листа при лакировке тиража
 
+    # Внесение данных в переменные для отображения итогов расчёта
+    report_type_client_var.set(type_client.get())
+    report_type_lack_var.set(type_lack.get())
+    report_film_var.set(film_reused.get())
+    report_amount_var.set(entry_amount.get())
+    report_width_var.set(entry_width.get())
+    report_length_var.set(entry_length.get())
+    report_percents_var.set(entry_percents.get())
+    report_cost_all_amount_var.set(f"{result:.2f}")
+    report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
+
+def draw_graph_all_amount(i):
     # Отрисовка графика
     x0 = 30  # Координата точки "х=0" в координатах Canvas
     y0 = 220  # Координата точки "у=0" в координатах Canvas
@@ -90,7 +104,6 @@ def calculate():
     canvas_graph.create_text(x0 - 3, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y,
                              text=int(calculate_result(i, float(entry_amount.get()) * 2)),
                              anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
-
     for j in range(1, x_max + 1):
         result_graph = calculate_result(i, graph_amount)
         graph_amount += scale_x_graph_amount
@@ -98,16 +111,52 @@ def calculate():
         y_begin = y0 - result_graph * scale_y
         canvas_graph.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
 
-    # Внесение данных в переменные для отображения итогов расчёта
-    report_type_client_var.set(type_client.get())
-    report_type_lack_var.set(type_lack.get())
-    report_film_var.set(film_reused.get())
-    report_amount_var.set(entry_amount.get())
-    report_width_var.set(entry_width.get())
-    report_length_var.set(entry_length.get())
-    report_percents_var.set(entry_percents.get())
-    report_cost_all_amount_var.set(f"{result:.2f}")
-    report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
+
+def draw_graph_one_sheet(i):
+    # Отрисовка графика
+    x0 = 30  # Координата точки "х=0" в координатах Canvas
+    y0 = 220  # Координата точки "у=0" в координатах Canvas
+    x_max = 585  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
+    y_max = 190  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "у"
+    x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график
+    y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
+    scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
+    scale_y = y_max / calculate_result(i, float(entry_amount.get()) * 2)  # Коэф. пересчёта масштаба для оси "у"
+    graph_amount = scale_x_graph_amount
+    canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
+    canvas_graph_2.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
+    canvas_graph_2.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
+    canvas_graph_2.create_line(x0 + x_max / 2, y0, x0 + x_max / 2, y0 - calculate_result(i, entry_amount.get()) * scale_y,
+                             width=1, dash=(4, 2), fill="grey")
+    canvas_graph_2.create_line(x0 + x_max, y0, x0 + x_max,
+                             y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, width=1, dash=(4, 2),
+                             fill="grey")
+    canvas_graph_2.create_line(x0, y0 - calculate_result(i, entry_amount.get()) * scale_y, x0 + x_max / 2,
+                             y0 - calculate_result(i, entry_amount.get()) * scale_y, width=1, dash=(4, 2), fill="grey")
+    canvas_graph_2.create_line(x0, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, x0 + x_max,
+                             y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, width=1, dash=(4, 2),
+                             fill="grey")
+    canvas_graph_2.create_text(x0 + x_max - 42, y0 - 10, text="Тираж, листов")
+    canvas_graph_2.create_text(x0 + 38, y0 - y_max - 10, text="Ст-сть, грн")
+    canvas_graph_2.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
+    canvas_graph_2.create_text(x0 + x_max / 2, y0 + 10,
+                             text=entry_amount.get())  # Подпись на оси "х". Расcчитываемый тираж
+    canvas_graph_2.create_text(x0 + x_max, y0 + 10,
+                             text=int(entry_amount.get()) * 2)  # Подпись на оси "х". Расчитываемый тираж * 2
+    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, 1) * scale_y, text=int(calculate_result(i, 1)),
+                             anchor=E)  # Подпись на оси "у". Ст-ть при тираже 1 лист.
+    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, entry_amount.get()) * scale_y,
+                             text=int(calculate_result(i, entry_amount.get())),
+                             anchor=E)  # Подпись на оси "у". Ст-ть при исходном тираже листов
+    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y,
+                             text=int(calculate_result(i, float(entry_amount.get()) * 2)),
+                             anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
+    for j in range(1, x_max + 1):
+        result_graph = calculate_result(i, graph_amount)
+        graph_amount += scale_x_graph_amount
+        x_begin += 1
+        y_begin = y0 - result_graph * scale_y
+        canvas_graph_2.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
@@ -130,7 +179,7 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
 dic_films_reused = {"новая": 1, "повторная или заказчика": 0}
 
 root = Tk()
-root.geometry("640x680+100+20")
+root.geometry("1200x680+100+20")
 # root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
@@ -260,6 +309,8 @@ button_calculate.place(x=80, y=140)
 button_clean.place(x=270, y=140)
 
 canvas_graph = Canvas(root, width=637, height=250)
-canvas_graph.place(x=2, y=420)
+canvas_graph.place(x=560, y=2)
+canvas_graph_2 = Canvas(root, width=637, height=250)
+canvas_graph_2.place(x=560, y=300)
 
 root.mainloop()
