@@ -13,21 +13,46 @@ def set_format(f):
     entry_length.insert(0, length_sheet)
 
 
-# Функция для очистки полей ввода и графика перед очерендым просчётом
+# Функция для очистки полей ввода и графиков перед очерендым просчётом
 def clean():
     entry_width.delete(0, END)
     entry_length.delete(0, END)
     entry_amount.delete(0, END)
     entry_percents.delete(0, END)
     canvas_graph.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
+    canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
 
 
-# Функция для проверки перед просчетом, заполнены пользователем ли все четыре поля
+# Функция для проверки перед просчетом, корректности заполнения всех необходисых полей.
 def check_filling():
-    if entry_width.get().isdigit and entry_length.get().isdigit() and entry_amount.get().isdigit() and entry_percents.get().isdigit():
-        calculate()
+    if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and entry_percents.get().isdigit():
+        if int(entry_width.get()) < 1 or int(entry_width.get()) > 1000:
+            entry_width.config(bg="red")
+            entry_width.after(300, lambda: entry_width.config(bg="white"))
+        elif int(entry_length.get()) < 1 or int(entry_length.get()) > 1000:
+            entry_length.config(bg="red")
+            entry_length.after(300, lambda: entry_length.config(bg="white"))
+        elif int(entry_amount.get()) < 1:
+            entry_amount.config(bg="red")
+            entry_amount.after(300, lambda: entry_amount.config(bg="white"))
+        elif int(entry_percents.get()) < 1 or int(entry_percents.get()) > 100:
+            entry_percents.config(bg="red")
+            entry_percents.after(300, lambda: entry_percents.config(bg="white"))
+        else:
+            calculate()
     else:
-        pass
+        if entry_width.get().isdigit() == False:
+            entry_width.config(bg="red")
+            entry_width.after(300, lambda: entry_width.config(bg="white"))
+        if entry_length.get().isdigit() == False:
+            entry_length.config(bg="red")
+            entry_length.after(300, lambda: entry_length.config(bg="white"))
+        if entry_amount.get().isdigit() == False:
+            entry_amount.config(bg="red")
+            entry_amount.after(300, lambda: entry_amount.config(bg="white"))
+        if entry_percents.get().isdigit() == False:
+            entry_percents.config(bg="red")
+            entry_percents.after(300, lambda: entry_percents.config(bg="white"))
 
 
 # Функция для вычисления итоговой стоимости выполнения лакировки
@@ -71,11 +96,11 @@ def draw_graph_all_amount(i):
     y0 = 220  # Координата точки "у=0" в координатах Canvas
     x_max = 585  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
     y_max = 190  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "у"
-    x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график
-    y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
+    x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график. Вычисляется каждую итерацию.
+    y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график. Вычисляется каждую итерацию.
     scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
     scale_y = y_max / calculate_result(i, float(entry_amount.get()) * 2)  # Коэф. пересчёта масштаба для оси "у"
-    graph_amount = scale_x_graph_amount
+    graph_amount = scale_x_graph_amount  # Содержит значение для оси "х" увеличивающееся для каждой итерации построения графика
     canvas_graph.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
     canvas_graph.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
@@ -109,7 +134,7 @@ def draw_graph_all_amount(i):
         graph_amount += scale_x_graph_amount
         x_begin += 1
         y_begin = y0 - result_graph * scale_y
-        canvas_graph.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
+        canvas_graph.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)  # график
 
 
 def draw_graph_one_sheet(i):
@@ -122,7 +147,7 @@ def draw_graph_one_sheet(i):
     y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
     scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
     scale_y = y_max / calculate_result(i, float(entry_amount.get()) * 2)  # Коэф. пересчёта масштаба для оси "у"
-    graph_amount = scale_x_graph_amount
+    graph_amount = scale_x_graph_amount  # Содержит значение для оси "х" увеличивающееся для каждой итерации построения графика
     canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph_2.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
     canvas_graph_2.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
@@ -179,8 +204,8 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
 dic_films_reused = {"новая": 1, "повторная или заказчика": 0}
 
 root = Tk()
-root.geometry("1200x680+100+20")
-# root.iconbitmap("TimPack.ico")
+root.geometry("1200x680+100+35")
+root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 
 type_lack = StringVar()  # Раскрывающийся список для выбора типа лакировки
