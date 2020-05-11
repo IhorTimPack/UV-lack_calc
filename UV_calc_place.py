@@ -30,9 +30,10 @@ def clean():
     report_percents_var.set("")
     report_cost_all_amount_var.set("")
     report_cost_one_sheet_var.set("")
+    details_frame.destroy()
 
 
-# Функция для проверки перед просчетом, корректности заполнения всех необходисых полей.
+# Функция для проверки перед просчетом корректности заполнения всех необходисых полей.
 def check_filling():
     if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and entry_percents.get().isdigit():
         if int(entry_width.get()) < 1 or int(entry_width.get()) > 1000:
@@ -41,7 +42,7 @@ def check_filling():
         elif int(entry_length.get()) < 1 or int(entry_length.get()) > 1000:
             entry_length.config(bg="red")
             entry_length.after(300, lambda: entry_length.config(bg="white"))
-        elif int(entry_amount.get()) < 1:
+        elif int(entry_amount.get()) < 1 or int(entry_amount.get()) > 10000000:
             entry_amount.config(bg="red")
             entry_amount.after(300, lambda: entry_amount.config(bg="white"))
         elif int(entry_percents.get()) < 1 or int(entry_percents.get()) > 100:
@@ -199,6 +200,41 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
         canvas_graph_2.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
 
 
+# Функция для отображения подробной калькуляции расчитывемого заказа.
+def details():
+    global details_frame
+    details_frame = Frame(root, width=400, height=200)
+    details_frame.place(x=80, y=400)
+    details_cost_lack_name = Label(details_frame, text="Стоимость УФ-лака:")
+    details_cost_lack_var = StringVar()
+    details_cost_lack = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
+    details_cost_lack_sheet = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
+    details_cost_lack_measure = Label(details_frame, text="грн.")
+    details_salary_employee_name = Label(details_frame, text="Зарплата печатника:")
+    details_salary_employee_var = StringVar()
+    details_salary_employee = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
+    details_salary_employee_sheet = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
+    details_salary_employee_measure = Label(details_frame, text="грн.")
+    details_electricity_name = Label(details_frame, text="Стоимость электричества:")
+    details_electricity_var = StringVar()
+    details_electricity = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
+    details_electricity_sheet = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
+    details_electricity_measure = Label(details_frame, text="грн.")
+
+    details_cost_lack_name.place(x=10, y=10)
+    details_cost_lack.place(x=230, y=10)
+    details_cost_lack_sheet.place(x=280, y=10)
+    details_cost_lack_measure.place(x=350, y=10)
+    details_salary_employee_name.place(x=10, y=35)
+    details_salary_employee.place(x=230, y=35)
+    details_salary_employee_sheet.place(x=280, y=35)
+    details_salary_employee_measure.place(x=350, y=35)
+    details_electricity_name.place(x=10, y=60)
+    details_electricity.place(x=230, y=60)
+    details_electricity_sheet.place(x=280, y=60)
+    details_electricity_measure.place(x=350, y=60)
+
+
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
 dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [10.5, 10.5], "drum": [220, 300], "film": [35, 70],
                   "salary": [25, 25], "printing": [0.14, 0.2], "speed": [250, 200], "adjustment_cost": [85, 95],
@@ -258,36 +294,36 @@ text_film.place(x=290, y=110)
 
 report_type_client_name = Label(root, text="Тип клиента:", justify=LEFT)
 report_type_client_var = StringVar()
-report_type_client = Label(root, textvariable=report_type_client_var, font=16)
+report_type_client = Label(root, textvariable=report_type_client_var, font="TkDefaultFont 11 bold italic")
 report_type_lack_name = Label(root, text="Тип лака:")
 report_type_lack_var = StringVar()
-report_type_lack = Label(root, textvariable=report_type_lack_var, font=16)
+report_type_lack = Label(root, textvariable=report_type_lack_var, font="TkDefaultFont 11 bold italic")
 report_film_name = Label(root, text="Плёнка:")
 report_film_var = StringVar()
-report_film = Label(root, textvariable=report_film_var, font=16)
+report_film = Label(root, textvariable=report_film_var, font="TkDefaultFont 11 bold italic")
 report_amount_name = Label(root, text="Тираж:")
 report_amount_var = StringVar()
-report_amount = Label(root, textvariable=report_amount_var, font=16)
+report_amount = Label(root, textvariable=report_amount_var, font="TkDefaultFont 11 bold italic")
 report_amount_measure = Label(root, text="лист.")
 report_width_name = Label(root, text="Ширина листа:")
 report_width_var = StringVar()
-report_width = Label(root, textvariable=report_width_var, font=16)
+report_width = Label(root, textvariable=report_width_var, font="TkDefaultFont 11 bold italic")
 report_width_measure = Label(root, text="мм.")
 report_length_name = Label(root, text="Длина листа:")
 report_length_var = StringVar()
-report_length = Label(root, textvariable=report_length_var, font=16)
+report_length = Label(root, textvariable=report_length_var, font="TkDefaultFont 11 bold italic")
 report_length_measure = Label(root, text="мм.")
 report_percents_name = Label(root, text="Процент заполнения листа:")
 report_percents_var = StringVar()
-report_percents = Label(root, textvariable=report_percents_var, font=16)
+report_percents = Label(root, textvariable=report_percents_var, font="TkDefaultFont 11 bold italic")
 report_percents_measure = Label(root, text="%")
 report_cost_all_amount_name = Label(root, text="Стоимость лакировки тиража:")
 report_cost_all_amount_var = StringVar()
-report_cost_all_amount = Label(root, textvariable=report_cost_all_amount_var, font=16, fg="red")
+report_cost_all_amount = Label(root, textvariable=report_cost_all_amount_var, font="TkDefaultFont 11 bold italic", fg="red")
 report_cost_all_amount_measure = Label(root, text="грн.")
 report_cost_one_sheet_name = Label(root, text="Стоимость лакировки одного листа:")
 report_cost_one_sheet_var = StringVar()
-report_cost_one_sheet = Label(root, textvariable=report_cost_one_sheet_var, font=16, fg="red")
+report_cost_one_sheet = Label(root, textvariable=report_cost_one_sheet_var, font="TkDefaultFont 11 bold italic", fg="red")
 report_cost_one_sheet_measure = Label(root, text="грн.")
 
 report_type_client_name.place(x=80, y=170)
@@ -333,9 +369,9 @@ button_sixthA1 = Button(root, text="""1/6 A1""", command=lambda: set_format("""1
 button_sixthB1 = Button(root, text="""1/6 B1""", command=lambda: set_format("""1/6 B1"""), width=5)
 button_A2 = Button(root, text="A2", command=lambda: set_format("A2"), width=5)
 button_B2 = Button(root, text="B2", command=lambda: set_format("B2"), width=5)
-button_calculate = Button(root, text="Рассчитать", command=check_filling, width=25)
-button_clean = Button(root, text="Очистить", command=clean, width=25)
-
+button_calculate = Button(root, text="Рассчитать", command=check_filling, width=23)
+button_clean = Button(root, text="Очистить", command=clean, width=23)
+button_show_details = Button(root, text="Показать детали", command=details, width=23)
 
 button_A4.place(x=445, y=15)
 button_B4.place(x=495, y=15)
@@ -345,8 +381,9 @@ button_sixthA1.place(x=445, y=75)
 button_sixthB1.place(x=495, y=75)
 button_A2.place(x=445, y=105)
 button_B2.place(x=495, y=105)
-button_calculate.place(x=80, y=140)
-button_clean.place(x=270, y=140)
+button_calculate.place(x=10, y=140)
+button_clean.place(x=190, y=140)
+button_show_details.place(x=370, y=140)
 
 canvas_graph = Canvas(root, width=637, height=250)
 canvas_graph.place(x=560, y=2)
