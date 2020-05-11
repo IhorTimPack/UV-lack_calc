@@ -21,6 +21,15 @@ def clean():
     entry_percents.delete(0, END)
     canvas_graph.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
+    report_type_client_var.set("")
+    report_type_lack_var.set("")
+    report_film_var.set("")
+    report_amount_var.set("")
+    report_width_var.set("")
+    report_length_var.set("")
+    report_percents_var.set("")
+    report_cost_all_amount_var.set("")
+    report_cost_one_sheet_var.set("")
 
 
 # Функция для проверки перед просчетом, корректности заполнения всех необходисых полей.
