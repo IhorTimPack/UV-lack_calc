@@ -71,7 +71,7 @@ def calculate_result(i, amount):
 
 # Функция отрабатывает команду "Рассчитать"
 def calculate():
-    if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
+    if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:  # Если один из размеров листа больше 500 мм, цены берем для второй категории заказа
         i = 1
     else:
         i = 0
@@ -90,11 +90,10 @@ def calculate():
     report_cost_all_amount_var.set(f"{result:.2f}")
     report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
 
-def draw_graph_all_amount(i):
-    # Отрисовка графика
-    x0 = 30  # Координата точки "х=0" в координатах Canvas
+def draw_graph_all_amount(i):  # Отрисовка графика ст-ти тиража к размеру тиража
+    x0 = 35  # Координата точки "х=0" в координатах Canvas
     y0 = 220  # Координата точки "у=0" в координатах Canvas
-    x_max = 585  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
+    x_max = 580  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
     y_max = 190  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "у"
     x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график. Вычисляется каждую итерацию.
     y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график. Вычисляется каждую итерацию.
@@ -118,14 +117,14 @@ def draw_graph_all_amount(i):
     canvas_graph.create_text(x0 + 38, y0 - y_max - 10, text="Ст-сть, грн")
     canvas_graph.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
     canvas_graph.create_text(x0 + x_max / 2, y0 + 10,
-                             text=entry_amount.get())  # Подпись на оси "х". Расcчитываемый тираж
+                             text=entry_amount.get(), fill="red")  # Подпись на оси "х". Расcчитываемый тираж
     canvas_graph.create_text(x0 + x_max, y0 + 10,
                              text=int(entry_amount.get()) * 2)  # Подпись на оси "х". Расчитываемый тираж * 2
     canvas_graph.create_text(x0 - 3, y0 - calculate_result(i, 1) * scale_y, text=int(calculate_result(i, 1)),
                              anchor=E)  # Подпись на оси "у". Ст-ть при тираже 1 лист.
     canvas_graph.create_text(x0 - 3, y0 - calculate_result(i, entry_amount.get()) * scale_y,
                              text=int(calculate_result(i, entry_amount.get())),
-                             anchor=E)  # Подпись на оси "у". Ст-ть при исходном тираже листов
+                             anchor=E, fill="red")  # Подпись на оси "у". Ст-ть при исходном тираже листов
     canvas_graph.create_text(x0 - 3, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y,
                              text=int(calculate_result(i, float(entry_amount.get()) * 2)),
                              anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
@@ -137,47 +136,54 @@ def draw_graph_all_amount(i):
         canvas_graph.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)  # график
 
 
-def draw_graph_one_sheet(i):
-    # Отрисовка графика
-    x0 = 30  # Координата точки "х=0" в координатах Canvas
+def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти одного листа при лакировке тиража
+    x0 = 35  # Координата точки "х=0" в координатах Canvas
     y0 = 220  # Координата точки "у=0" в координатах Canvas
-    x_max = 585  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
+    x_max = 580  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "х"
     y_max = 190  # Кол-во пикселей от точки ноль до максимальной точки графика по оси "у"
     x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график
-    y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
+    # y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
     scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
-    scale_y = y_max / calculate_result(i, float(entry_amount.get()) * 2)  # Коэф. пересчёта масштаба для оси "у"
+    scale_y = y_max / (calculate_result(i, float(entry_amount.get()) / 2) / (float(entry_amount.get()) / 2))  # Коэф. пересчёта масштаба для оси "у"
     graph_amount = scale_x_graph_amount  # Содержит значение для оси "х" увеличивающееся для каждой итерации построения графика
     canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph_2.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
     canvas_graph_2.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
-    canvas_graph_2.create_line(x0 + x_max / 2, y0, x0 + x_max / 2, y0 - calculate_result(i, entry_amount.get()) * scale_y,
-                             width=1, dash=(4, 2), fill="grey")
+    canvas_graph_2.create_line(x0 + x_max / 2, y0, x0 + x_max / 2, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                             width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку тиража
     canvas_graph_2.create_line(x0 + x_max, y0, x0 + x_max,
-                             y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, width=1, dash=(4, 2),
-                             fill="grey")
-    canvas_graph_2.create_line(x0, y0 - calculate_result(i, entry_amount.get()) * scale_y, x0 + x_max / 2,
-                             y0 - calculate_result(i, entry_amount.get()) * scale_y, width=1, dash=(4, 2), fill="grey")
-    canvas_graph_2.create_line(x0, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, x0 + x_max,
-                             y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, width=1, dash=(4, 2),
-                             fill="grey")
-    canvas_graph_2.create_text(x0 + x_max - 42, y0 - 10, text="Тираж, листов")
-    canvas_graph_2.create_text(x0 + 38, y0 - y_max - 10, text="Ст-сть, грн")
+                             y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
+                             fill="grey")  # Пунктир на ось "х" в точку удвоенного тиража
+    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y, x0 + x_max / 2,
+                             y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y, width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "у" в точку стоимости тиража
+    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, x0 + x_max,
+                             y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
+                             fill="grey")  # Пунктир на ось "у" в точку стоимости удвоенного тиража
+    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, x0 + x_max + 10,
+                             y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, width=1, dash=(4, 2),
+                             fill="grey")  # Пунктир на ось "у" в точку стоимости максимально возможного тиража
+    canvas_graph_2.create_text(x0 + x_max - 50, y0 - 10, text="Тираж, листов")
+    canvas_graph_2.create_text(x0 + 60, y0 - y_max - 10, text="Ст-сть за лист, грн")
     canvas_graph_2.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
     canvas_graph_2.create_text(x0 + x_max / 2, y0 + 10,
-                             text=entry_amount.get())  # Подпись на оси "х". Расcчитываемый тираж
+                             text=entry_amount.get(), fill="red")  # Подпись на оси "х". Расчитываемый тираж
     canvas_graph_2.create_text(x0 + x_max, y0 + 10,
                              text=int(entry_amount.get()) * 2)  # Подпись на оси "х". Расчитываемый тираж * 2
-    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, 1) * scale_y, text=int(calculate_result(i, 1)),
-                             anchor=E)  # Подпись на оси "у". Ст-ть при тираже 1 лист.
-    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, entry_amount.get()) * scale_y,
-                             text=int(calculate_result(i, entry_amount.get())),
-                             anchor=E)  # Подпись на оси "у". Ст-ть при исходном тираже листов
-    canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y,
-                             text=int(calculate_result(i, float(entry_amount.get()) * 2)),
+    # canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, 1) * scale_y, text=int(calculate_result(i, 1)),
+    #                          anchor=E)  # Подпись на оси "у". Ст-ть при тираже 1 лист.
+    canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                             text=f"{(float((calculate_result(i, entry_amount.get()) / float(entry_amount.get())))):.3f}",
+                             anchor=E, fill="red")  # Подпись на оси "у". Ст-ть при исходном тираже листов
+    canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+                             text=f"{float((calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2))):.3f}",
                              anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
+    canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y,
+                             text=f"{float((calculate_result(i, 1000000) / 1000000)):.3f}",
+                             anchor=E)  # Подпись на оси "у". Ст-ть при максимально возможном тираже
+
+
     for j in range(1, x_max + 1):
-        result_graph = calculate_result(i, graph_amount)
+        result_graph = calculate_result(i, graph_amount) / graph_amount
         graph_amount += scale_x_graph_amount
         x_begin += 1
         y_begin = y0 - result_graph * scale_y
