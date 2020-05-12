@@ -15,7 +15,7 @@ def set_format(f):
 
 # Функция для очистки полей ввода и графиков перед очерендым просчётом
 def clean():
-    global details_frame
+    # global details_frame
     entry_width.delete(0, END)
     entry_length.delete(0, END)
     entry_amount.delete(0, END)
@@ -31,8 +31,8 @@ def clean():
     report_percents_var.set("")
     report_cost_all_amount_var.set("")
     report_cost_one_sheet_var.set("")
-    # details_frame = Frame(root, width=400, height=200)
-    details_frame.destroy()
+    button_show_details["text"] = "Показать детали"
+    details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
 
 # Функция для проверки перед просчетом корректности заполнения всех необходисых полей.
@@ -101,6 +101,14 @@ def calculate():
     report_percents_var.set(entry_percents.get())
     report_cost_all_amount_var.set(f"{result:.2f}")
     report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
+
+    # Вычмсление и внесение данных для отображения подробной калькуляции
+    details_cost_lack_var.set(f"""{(float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
+        dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(entry_amount.get())):.2f}""")
+    details_salary_employee_var.set((float(
+        dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+        entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
+        dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))
 
 def draw_graph_all_amount(i):  # Отрисовка графика ст-ти тиража к размеру тиража
     x0 = 35  # Координата точки "х=0" в координатах Canvas
@@ -201,57 +209,15 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
         canvas_graph_2.create_line(x_begin, y_begin, x_begin + 1, y0 - result_graph * scale_y, width=1)
 
 
-# Функция для отображения подробной калькуляции расчитывемого заказа.
+# Функция для включения и выключения отображения подробной калькуляции расчитывемого заказа.
 def details():
-    global details_frame
-    details_frame = Frame(root, width=400, height=200)
-    details_frame.place(x=75, y=400)
-    details_cost_lack_name = Label(details_frame, text="Стоимость УФ-лака:")
-    details_cost_lack_var = StringVar()
-    details_cost_lack = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
-    details_cost_lack_sheet = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
-    details_cost_lack_measure = Label(details_frame, text="грн.")
-    details_salary_employee_name = Label(details_frame, text="Зарплата печатника:")
-    details_salary_employee_var = StringVar()
-    details_salary_employee = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
-    details_salary_employee_sheet = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
-    details_salary_employee_measure = Label(details_frame, text="грн.")
-    details_electricity_name = Label(details_frame, text="Стоимость электричества:")
-    details_electricity_var = StringVar()
-    details_electricity = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
-    details_electricity_sheet = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
-    details_electricity_measure = Label(details_frame, text="грн.")
-    details_film_name = Label(details_frame, text="Стоимость пленки")
-    details_film_var = StringVar()
-    details_film = Label(details_frame, textvariable=details_film_var, font="TkDefaultFont 11 bold italic")
-    details_film_sheet = Label(details_frame, textvariable=details_film_var, font="TkDefaultFont 11 bold italic")
-    details_film_measure = Label(details_frame, text="грн.")
-    details_drum_name = Label(details_frame, text="Стоимость рамки:")
-    details_drum_var = StringVar()
-    details_drum = Label(details_frame, textvariable=details_drum_var, font="TkDefaultFont 11 bold italic")
-    details_drum_sheet = Label(details_frame, textvariable=details_drum_var, font="TkDefaultFont 11 bold italic")
-    details_drum_measure = Label(details_frame, text="грн.")
+    if button_show_details["text"] == "Показать детали":
+        details_frame.config(height=200)  # Увеличиваем размер окна, что бы отображалась подробная калькуляция
+        button_show_details["text"] = "Скрыть детали"
+    else:
+        button_show_details["text"] = "Показать детали"
+        details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
-    details_cost_lack_name.place(x=10, y=10)
-    details_cost_lack.place(x=230, y=10)
-    details_cost_lack_sheet.place(x=280, y=10)
-    details_cost_lack_measure.place(x=350, y=10)
-    details_salary_employee_name.place(x=10, y=35)
-    details_salary_employee.place(x=230, y=35)
-    details_salary_employee_sheet.place(x=280, y=35)
-    details_salary_employee_measure.place(x=350, y=35)
-    details_electricity_name.place(x=10, y=60)
-    details_electricity.place(x=230, y=60)
-    details_electricity_sheet.place(x=280, y=60)
-    details_electricity_measure.place(x=350, y=60)
-    details_film_name.place(x=10, y=85)
-    details_film.place(x=230, y=85)
-    details_film_sheet.place(x=280, y=85)
-    details_film_measure.place(x=350, y=85)
-    details_drum_name.place(x=10, y=110)
-    details_drum.place(x=230, y=110)
-    details_drum_sheet.place(x=280, y=110)
-    details_drum_measure.place(x=350, y=110)
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
@@ -277,6 +243,8 @@ root = Tk()
 root.geometry("1200x680+100+35")
 root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
+details_frame = Frame(root, width=400, height=1)
+details_frame.place(x=70, y=400)
 
 type_lack = StringVar()  # Раскрывающийся список для выбора типа лакировки
 type_lack.set("УФ-лак")
@@ -369,6 +337,51 @@ report_cost_all_amount_measure.place(x=425, y=345)
 report_cost_one_sheet_name.place(x=80, y=370)
 report_cost_one_sheet.place(x=420, y=392, anchor="se")
 report_cost_one_sheet_measure.place(x=425, y=370)
+
+details_cost_lack_name = Label(details_frame, text="Стоимость УФ-лака:")
+details_cost_lack_var = StringVar()
+details_cost_lack = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
+details_cost_lack_measure = Label(details_frame, text="грн.")
+details_salary_employee_name = Label(details_frame, text="Зарплата печатника:")
+details_salary_employee_var = StringVar()
+details_salary_employee = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
+details_salary_employee_measure = Label(details_frame, text="грн.")
+details_electricity_name = Label(details_frame, text="Стоимость электричества:")
+details_electricity_var = StringVar()
+details_electricity = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
+details_electricity_measure = Label(details_frame, text="грн.")
+details_film_name = Label(details_frame, text="Стоимость пленки")
+details_film_var = StringVar()
+details_film = Label(details_frame, textvariable=details_film_var, font="TkDefaultFont 11 bold italic")
+details_film_measure = Label(details_frame, text="грн.")
+details_drum_name = Label(details_frame, text="Стоимость рамки:")
+details_drum_var = StringVar()
+details_drum = Label(details_frame, textvariable=details_drum_var, font="TkDefaultFont 11 bold italic")
+details_drum_measure = Label(details_frame, text="грн.")
+details_profit_name = Label(details_frame, text="Заработок:")
+details_profit_var = StringVar()
+details_profit = Label(details_frame, textvariable=details_profit_var, font="TkDefaultFont 11 bold italic")
+details_profit_measure = Label(details_frame, text="грн.")
+
+# Размещение виджетов описания подробной калькуляции в координатах "details_frame"
+details_cost_lack_name.place(x=10, y=10)
+details_cost_lack.place(x=305, y=10)
+details_cost_lack_measure.place(x=355, y=10)
+details_salary_employee_name.place(x=10, y=35)
+details_salary_employee.place(x=305, y=35)
+details_salary_employee_measure.place(x=355, y=35)
+details_electricity_name.place(x=10, y=60)
+details_electricity.place(x=305, y=60)
+details_electricity_measure.place(x=355, y=60)
+details_film_name.place(x=10, y=85)
+details_film.place(x=305, y=85)
+details_film_measure.place(x=355, y=85)
+details_drum_name.place(x=10, y=110)
+details_drum.place(x=305, y=110)
+details_drum_measure.place(x=355, y=110)
+details_profit_name.place(x=10, y=135)
+details_profit.place(x=305, y=135)
+details_profit_measure.place(x=355, y=135)
 
 entry_amount = Entry(root, width=10, justify=RIGHT)
 entry_percents = Entry(root, width=10, justify=RIGHT)
