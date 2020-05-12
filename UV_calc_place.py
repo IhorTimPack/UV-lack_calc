@@ -15,6 +15,7 @@ def set_format(f):
 
 # Функция для очистки полей ввода и графиков перед очерендым просчётом
 def clean():
+    global details_frame
     entry_width.delete(0, END)
     entry_length.delete(0, END)
     entry_amount.delete(0, END)
@@ -30,6 +31,7 @@ def clean():
     report_percents_var.set("")
     report_cost_all_amount_var.set("")
     report_cost_one_sheet_var.set("")
+    # details_frame = Frame(root, width=400, height=200)
     details_frame.destroy()
 
 
@@ -123,7 +125,7 @@ def draw_graph_all_amount(i):  # Отрисовка графика ст-ти т�
     canvas_graph.create_line(x0, y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, x0 + x_max,
                              y0 - calculate_result(i, float(entry_amount.get()) * 2) * scale_y, width=1, dash=(4, 2),
                              fill="grey")
-    canvas_graph.create_text(x0 + x_max - 42, y0 - 10, text="Тираж, листов")
+    canvas_graph.create_text(x0 + x_max - 45, y0 - 10, text="Тираж, листов")
     canvas_graph.create_text(x0 + 38, y0 - y_max - 10, text="Ст-сть, грн")
     canvas_graph.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
     canvas_graph.create_text(x0 + x_max / 2, y0 + 10,
@@ -172,7 +174,7 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
     canvas_graph_2.create_line(x0, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, x0 + x_max + 10,
                              y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, width=1, dash=(4, 2),
                              fill="grey")  # Пунктир на ось "у" в точку стоимости максимально возможного тиража
-    canvas_graph_2.create_text(x0 + x_max - 50, y0 - 10, text="Тираж, листов")
+    canvas_graph_2.create_text(x0 + x_max - 45, y0 - 10, text="Тираж, листов")
     canvas_graph_2.create_text(x0 + 60, y0 - y_max - 10, text="Ст-сть за лист, грн")
     canvas_graph_2.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
     canvas_graph_2.create_text(x0 + x_max / 2, y0 + 10,
@@ -191,7 +193,6 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
                              text=f"{float((calculate_result(i, 1000000) / 1000000)):.3f}",
                              anchor=E)  # Подпись на оси "у". Ст-ть при максимально возможном тираже
 
-
     for j in range(1, x_max + 1):
         result_graph = calculate_result(i, graph_amount) / graph_amount
         graph_amount += scale_x_graph_amount
@@ -204,7 +205,7 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
 def details():
     global details_frame
     details_frame = Frame(root, width=400, height=200)
-    details_frame.place(x=80, y=400)
+    details_frame.place(x=75, y=400)
     details_cost_lack_name = Label(details_frame, text="Стоимость УФ-лака:")
     details_cost_lack_var = StringVar()
     details_cost_lack = Label(details_frame, textvariable=details_cost_lack_var, font="TkDefaultFont 11 bold italic")
@@ -220,6 +221,16 @@ def details():
     details_electricity = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
     details_electricity_sheet = Label(details_frame, textvariable=details_electricity_var, font="TkDefaultFont 11 bold italic")
     details_electricity_measure = Label(details_frame, text="грн.")
+    details_film_name = Label(details_frame, text="Стоимость пленки")
+    details_film_var = StringVar()
+    details_film = Label(details_frame, textvariable=details_film_var, font="TkDefaultFont 11 bold italic")
+    details_film_sheet = Label(details_frame, textvariable=details_film_var, font="TkDefaultFont 11 bold italic")
+    details_film_measure = Label(details_frame, text="грн.")
+    details_drum_name = Label(details_frame, text="Стоимость рамки:")
+    details_drum_var = StringVar()
+    details_drum = Label(details_frame, textvariable=details_drum_var, font="TkDefaultFont 11 bold italic")
+    details_drum_sheet = Label(details_frame, textvariable=details_drum_var, font="TkDefaultFont 11 bold italic")
+    details_drum_measure = Label(details_frame, text="грн.")
 
     details_cost_lack_name.place(x=10, y=10)
     details_cost_lack.place(x=230, y=10)
@@ -233,6 +244,14 @@ def details():
     details_electricity.place(x=230, y=60)
     details_electricity_sheet.place(x=280, y=60)
     details_electricity_measure.place(x=350, y=60)
+    details_film_name.place(x=10, y=85)
+    details_film.place(x=230, y=85)
+    details_film_sheet.place(x=280, y=85)
+    details_film_measure.place(x=350, y=85)
+    details_drum_name.place(x=10, y=110)
+    details_drum.place(x=230, y=110)
+    details_drum_sheet.place(x=280, y=110)
+    details_drum_measure.place(x=350, y=110)
 
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
