@@ -37,7 +37,8 @@ def clean():
 
 # Функция для проверки перед просчетом корректности заполнения всех необходисых полей.
 def check_filling():
-    if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and entry_percents.get().isdigit():
+    if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and \
+            entry_percents.get().isdigit():
         if int(entry_width.get()) < 1 or int(entry_width.get()) > 1000:
             entry_width.config(bg="red")
             entry_width.after(300, lambda: entry_width.config(bg="white"))
@@ -83,7 +84,8 @@ def calculate_result(i, amount):
 
 # Функция отрабатывает команду "Рассчитать"
 def calculate():
-    if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:  # Если один из размеров листа больше 500 мм, цены берем для второй категории заказа
+    # Если один из размеров листа больше 500 мм, цены берем для второй категории заказа
+    if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
         i = 1
     else:
         i = 0
@@ -103,17 +105,19 @@ def calculate():
     report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
 
     # Вычисление и внесение данных для отображения подробной калькуляции
-    details_cost_lack_var.set(f"""{(float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
-        dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(entry_amount.get())):.2f}""")
-    details_salary_employee_var.set(f"""{((float(
-        dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+    details_cost_lack_var.set(f"""{(float(entry_length.get()) * float(entry_width.get()) * float(
+        entry_percents.get()) / 100000000 * float(dic_type_lack[type_lack.get()][1]) * float(
+        dic_type_lack[type_lack.get()][0]) * float(entry_amount.get())):.2f}""")
+    details_salary_employee_var.set(f"""{((float(dic_all_prices["salary"][i])) * float(
+        entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
         dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])):.2f}""")
-    details_electricity_var.set(f"""{((float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i])) * float(
-        entry_amount.get()) / float(dic_all_prices["speed"][i])):.2f}""")
+    details_electricity_var.set(f"""{((float(dic_all_prices["dryer"][i]) * float(
+        dic_all_prices["electricity"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i])):.2f}""")
     details_film_var.set(f"""{(float(dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])):.2f}""")
     details_drum_var.set(f"""{float(dic_all_prices["drum"][i]):.2f}""")
-    details_profit_var.set(f"""{(result - float(details_cost_lack_var.get())  - float(details_salary_employee_var.get()) - float(
-        details_electricity_var.get()) - float(details_film_var.get()) - float(details_drum_var.get())):.2f}""")
+    details_profit_var.set(f"""{(result - float(details_cost_lack_var.get())  - float(
+        details_salary_employee_var.get()) - float(details_electricity_var.get()) - float(
+        details_film_var.get()) - float(details_drum_var.get())):.2f}""")
     details_time_var.set(f"""{(float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
         dic_all_prices["adjustment_time"][i])):.2f}""")
 
@@ -127,7 +131,7 @@ def draw_graph_all_amount(i):  # Отрисовка графика ст-ти т�
     y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график. Вычисляется каждую итерацию.
     scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
     scale_y = y_max / calculate_result(i, float(entry_amount.get()) * 2)  # Коэф. пересчёта масштаба для оси "у"
-    graph_amount = scale_x_graph_amount  # Содержит значение для оси "х" увеличивающееся для каждой итерации построения графика
+    graph_amount = scale_x_graph_amount  # Значение для оси "х" увеличивающееся для каждой итерации построения графика
     canvas_graph.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
     canvas_graph.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
@@ -172,42 +176,48 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
     x_begin = x0  # Начальная точка "х" отрезка, из которых строится итоговый график
     # y_begin = y0  # Начальная точка "у" отрезка, из которых строится итоговый график
     scale_x_graph_amount = float(entry_amount.get()) * 2 / x_max  # Коэф. пересчёта масштаба для оси "х"
-    scale_y = y_max / (calculate_result(i, float(entry_amount.get()) / 2) / (float(entry_amount.get()) / 2))  # Коэф. пересчёта масштаба для оси "у"
-    graph_amount = scale_x_graph_amount  # Содержит значение для оси "х" увеличивающееся для каждой итерации построения графика
+    # Коэф. пересчёта масштаба для оси "у"
+    scale_y = y_max / (calculate_result(i, float(entry_amount.get()) / 2) / (float(entry_amount.get()) / 2))
+    graph_amount = scale_x_graph_amount  # Значение для оси "х" увеличивающееся для каждой итерации построения графика
     canvas_graph_2.delete("all")  # Очистка Canvas перед отрисовкой очередного графика
     canvas_graph_2.create_line(x0 - 10, y0, x0 + x_max + 20, y0, width=1, arrow=LAST)  # Ось "x" координатной оси
     canvas_graph_2.create_line(x0, y0 + 10, x0, y0 - y_max - 20, width=1, arrow=LAST)  # Ось "y" координатной оси
-    canvas_graph_2.create_line(x0 + x_max / 2, y0, x0 + x_max / 2, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
-                             width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку тиража
-    canvas_graph_2.create_line(x0 + x_max, y0, x0 + x_max,
-                             y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
-                             fill="grey")  # Пунктир на ось "х" в точку удвоенного тиража
-    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y, x0 + x_max / 2,
-                             y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y, width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "у" в точку стоимости тиража
-    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, x0 + x_max,
-                             y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
-                             fill="grey")  # Пунктир на ось "у" в точку стоимости удвоенного тиража
+    canvas_graph_2.create_line(x0 + x_max / 2, y0, x0 + x_max / 2,
+                               y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                               width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку тиража
+    canvas_graph_2.create_line(x0 + x_max, y0, x0 + x_max, y0 - (
+                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+                               width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку удвоенного тиража
+    canvas_graph_2.create_line(x0, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                               x0 + x_max / 2,
+                               y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                               width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "у" в точку стоимости тиража
+    canvas_graph_2.create_line(x0, y0 - (
+                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+                               x0 + x_max, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (
+                    float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
+                               fill="grey")  # Пунктир на ось "у" в точку стоимости удвоенного тиража
     canvas_graph_2.create_line(x0, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, x0 + x_max + 10,
-                             y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, width=1, dash=(4, 2),
-                             fill="grey")  # Пунктир на ось "у" в точку стоимости максимально возможного тиража
+                               y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, width=1, dash=(4, 2),
+                               fill="grey")  # Пунктир на ось "у" в точку стоимости максимально возможного тиража
     canvas_graph_2.create_text(x0 + x_max - 45, y0 - 10, text="Тираж, листов")
     canvas_graph_2.create_text(x0 + 60, y0 - y_max - 10, text="Ст-сть за лист, грн")
     canvas_graph_2.create_text(x0 + 10, y0 + 10, text="0")  # Подпись на оси "х". Точна "0"
-    canvas_graph_2.create_text(x0 + x_max / 2, y0 + 10,
-                             text=entry_amount.get(), fill="red")  # Подпись на оси "х". Расчитываемый тираж
+    canvas_graph_2.create_text(x0 + x_max / 2, y0 + 10, text=entry_amount.get(),
+                               fill="red")  # Подпись на оси "х". Расчитываемый тираж
     canvas_graph_2.create_text(x0 + x_max, y0 + 10,
-                             text=int(entry_amount.get()) * 2)  # Подпись на оси "х". Расчитываемый тираж * 2
-    # canvas_graph_2.create_text(x0 - 3, y0 - calculate_result(i, 1) * scale_y, text=int(calculate_result(i, 1)),
-    #                          anchor=E)  # Подпись на оси "у". Ст-ть при тираже 1 лист.
-    canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
-                             text=f"{(float((calculate_result(i, entry_amount.get()) / float(entry_amount.get())))):.3f}",
-                             anchor=E, fill="red")  # Подпись на оси "у". Ст-ть при исходном тираже листов
-    canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
-                             text=f"{float((calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2))):.3f}",
-                             anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
+                               text=int(entry_amount.get()) * 2)  # Подпись на оси "х". Расчитываемый тираж * 2
+    canvas_graph_2.create_text(x0 - 3,
+                               y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
+                               text=f"{(float((calculate_result(i, entry_amount.get()) / float(entry_amount.get())))):.3f}",
+                               anchor=E, fill="red")  # Подпись на оси "у". Ст-ть при исходном тираже листов
+    canvas_graph_2.create_text(x0 - 3, y0 - (
+                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+                               text=f"{float((calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2))):.3f}",
+                               anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
     canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y,
-                             text=f"{float((calculate_result(i, 1000000) / 1000000)):.3f}",
-                             anchor=E)  # Подпись на оси "у". Ст-ть при максимально возможном тираже
+                               text=f"{float((calculate_result(i, 1000000) / 1000000)):.3f}",
+                               anchor=E)  # Подпись на оси "у". Ст-ть при максимально возможном тираже
 
     for j in range(1, x_max + 1):
         result_graph = calculate_result(i, graph_amount) / graph_amount
