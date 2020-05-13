@@ -102,13 +102,21 @@ def calculate():
     report_cost_all_amount_var.set(f"{result:.2f}")
     report_cost_one_sheet_var.set(f"{result / float(entry_amount.get()):.3f}")
 
-    # Вычмсление и внесение данных для отображения подробной калькуляции
+    # Вычисление и внесение данных для отображения подробной калькуляции
     details_cost_lack_var.set(f"""{(float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
         dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(entry_amount.get())):.2f}""")
-    details_salary_employee_var.set((float(
+    details_salary_employee_var.set(f"""{((float(
         dic_all_prices["salary"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
-        entry_amount.get()) * float(dic_all_prices["printing"][i]) + float(
-        dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i]))
+        dic_all_prices["adjustment_time"][i]) * float(dic_all_prices["salary"][i])):.2f}""")
+    details_electricity_var.set(f"""{((float(dic_all_prices["dryer"][i]) * float(dic_all_prices["electricity"][i])) * float(
+        entry_amount.get()) / float(dic_all_prices["speed"][i])):.2f}""")
+    details_film_var.set(f"""{(float(dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])):.2f}""")
+    details_drum_var.set(f"""{float(dic_all_prices["drum"][i]):.2f}""")
+    details_profit_var.set(f"""{(result - float(details_cost_lack_var.get())  - float(details_salary_employee_var.get()) - float(
+        details_electricity_var.get()) - float(details_film_var.get()) - float(details_drum_var.get())):.2f}""")
+    details_time_var.set(f"""{(float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
+        dic_all_prices["adjustment_time"][i])):.2f}""")
+
 
 def draw_graph_all_amount(i):  # Отрисовка графика ст-ти тиража к размеру тиража
     x0 = 35  # Координата точки "х=0" в координатах Canvas
@@ -362,26 +370,33 @@ details_profit_name = Label(details_frame, text="Заработок:")
 details_profit_var = StringVar()
 details_profit = Label(details_frame, textvariable=details_profit_var, font="TkDefaultFont 11 bold italic")
 details_profit_measure = Label(details_frame, text="грн.")
+details_time_name = Label(details_frame, text="Время лакировки:")
+details_time_var = StringVar()
+details_time = Label(details_frame, textvariable=details_time_var, font="TkDefaultFont 11 bold italic")
+details_time_measure = Label(details_frame, text="ч.")
 
 # Размещение виджетов описания подробной калькуляции в координатах "details_frame"
 details_cost_lack_name.place(x=10, y=10)
-details_cost_lack.place(x=305, y=10)
+details_cost_lack.place(x=350, y=31, anchor="se")
 details_cost_lack_measure.place(x=355, y=10)
 details_salary_employee_name.place(x=10, y=35)
-details_salary_employee.place(x=305, y=35)
+details_salary_employee.place(x=350, y=56, anchor="se")
 details_salary_employee_measure.place(x=355, y=35)
 details_electricity_name.place(x=10, y=60)
-details_electricity.place(x=305, y=60)
+details_electricity.place(x=350, y=81, anchor="se")
 details_electricity_measure.place(x=355, y=60)
 details_film_name.place(x=10, y=85)
-details_film.place(x=305, y=85)
+details_film.place(x=350, y=106, anchor="se")
 details_film_measure.place(x=355, y=85)
 details_drum_name.place(x=10, y=110)
-details_drum.place(x=305, y=110)
+details_drum.place(x=350, y=131, anchor="se")
 details_drum_measure.place(x=355, y=110)
 details_profit_name.place(x=10, y=135)
-details_profit.place(x=305, y=135)
+details_profit.place(x=350, y=156, anchor="se")
 details_profit_measure.place(x=355, y=135)
+details_time_name.place(x=10, y=160)
+details_time.place(x=350, y=181, anchor="se")
+details_time_measure.place(x=355, y=160)
 
 entry_amount = Entry(root, width=10, justify=RIGHT)
 entry_percents = Entry(root, width=10, justify=RIGHT)
