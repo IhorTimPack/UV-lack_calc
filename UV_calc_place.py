@@ -33,10 +33,11 @@ def clean():
     report_cost_one_sheet_var.set("")
     button_show_details["text"] = "Показать детали"
     details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
+    entry_amount.focus()  # Устанавливаем курсор в поле ввода тиража
 
 
 # Функция для проверки перед просчетом корректности заполнения всех необходисых полей.
-def check_filling():
+def check_filling(*args):
     if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and \
             entry_percents.get().isdigit():
         if int(entry_width.get()) < 1 or int(entry_width.get()) > 1000:
@@ -447,4 +448,6 @@ canvas_graph.place(x=560, y=2)
 canvas_graph_2 = Canvas(root, width=637, height=250)
 canvas_graph_2.place(x=560, y=300)
 
+root.bind("<Return>", check_filling)  # Выполнить расчет по нажатию клавиши Enter/Return
+entry_amount.focus()  # Устанавливаем курсор в поле ввода тиража
 root.mainloop()
