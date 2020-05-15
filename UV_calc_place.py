@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами.
@@ -238,6 +239,52 @@ def details():
         details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
 
+# Функция отображения всех расценок
+def show_prices():
+    prices_window = Toplevel(root)
+    prices_window.geometry("1200x680+100+35")
+    prices_text_column_less_b3 = Label(prices_window, text="Печатный лист меньше В-3")
+    prices_text_column_more_b3 = Label(prices_window, text="Печатный лист больше В-3")
+    prices_text_electricity = Label(prices_window, text="Стоимость электричества")
+    prices_text_electricity_measure = Label(prices_window, text="грн/кВт.")
+    prices_text_drum = Label(prices_window, text="Стоимость изготовления рамки")
+    prices_text_drum_measure = Label(prices_window, text="грн/шт.")
+    price_text_film = Label(prices_window, text="Стоимость плёнки")
+    price_text_film_measure = Label(prices_window, text="грн/шт.")
+    price_text_dryer = Label(prices_window, text="Мощность потребляемой электроэнергии")
+    price_text_dryer_measure = Label(prices_window, text="кВт.")
+    price_text_salary = Label(prices_window, text="Зарплата лакировщика")
+    price_text_salary_measure = Label(prices_window, text="грн/час.")
+    price_text_printing = Label(prices_window, text="Стоиомсть лакировки")
+    price_text_printing_measure = Label(prices_window, text="грн/проход")
+    price_text_speed = Label(prices_window, text="Скорость лакировки")
+    price_text_speed_measure = Label(prices_window, text="лист/час.")
+    price_text_adjustment_cost = Label(prices_window, text="Стоимость приладки")
+    price_text_adjustment_cost_measure = Label(prices_window, text="грн.")
+    price_text_adjustment_time = Label(prices_window, text="Время приладки")
+    price_text_adjustment_time_measure = Label(prices_window, text="часю")
+
+    prices_text_column_less_b3.grid(row=0, column=2)
+    prices_text_column_more_b3.grid(row=0, column=3)
+    prices_text_electricity.grid(row=1, column=0)
+    prices_text_electricity_measure.grid(row=1, column=1)
+    prices_text_drum.grid(row=2, column=0)
+    prices_text_drum_measure.grid(row=2, column=1)
+    price_text_film.grid(row=3, column=0)
+    price_text_film_measure.grid(row=3, column=1)
+    price_text_dryer.grid(row=4, column=0)
+    price_text_dryer_measure.grid(row=4, column=1)
+    price_text_salary.grid(row=5, column=0)
+    price_text_salary_measure.grid(row=5, column=1)
+    price_text_printing.grid(row=6, column=0)
+    price_text_printing_measure.grid(row=6, column=1)
+    price_text_speed.grid(row=7, column=0)
+    price_text_speed_measure.grid(row=7, column=1)
+    price_text_adjustment_cost.grid(row=8, column=0)
+    price_text_adjustment_cost_measure.grid(row=8, column=1)
+    price_text_adjustment_time.grid(row=9, column=0)
+    price_text_adjustment_time_measure.grid(row=9, column=1)
+
 
 # Словарь со всеми невычисляемыми составляющими стоимости лакировки.
 dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [10.5, 10.5], "drum": [220, 300], "film": [35, 70],
@@ -262,6 +309,20 @@ root = Tk()
 root.geometry("1200x680+100+35")
 root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
+root.option_add('*tearOff', FALSE)
+
+# Создание меню
+menubar = Menu(root)
+root["menu"] = menubar
+menu_file = Menu(menubar)
+menu_edit = Menu(menubar)
+menubar.add_cascade(menu=menu_file, label='Файл')
+menubar.add_cascade(menu=menu_edit, label='Настройки')
+menu_file.add_command(label='New', command=clean)
+menu_file.add_command(label='Open...', command=clean)
+menu_file.add_command(label='Close', command=clean)
+menu_edit.add_command(label='Посмотреть расцени', command=show_prices)
+
 details_frame = Frame(root, width=400, height=1)
 details_frame.place(x=70, y=400)
 
@@ -281,6 +342,9 @@ film_reused.set("новая")
 checkbutton_film_reused = Checkbutton(root, variable=film_reused, onvalue="новая",
                                       offvalue="повторная или заказчика")
 checkbutton_film_reused.place(x=412, y=108)
+
+separator_line_1 = ttk.Separator(root, orient=VERTICAL)
+separator_line_1.place(x=279, y=10, height=120)
 
 text_type_client = Label(root, text="Тип клиента:")
 text_amount = Label(root, text="Тираж, листов:")
@@ -340,7 +404,7 @@ report_film_name.place(x=80, y=220)
 report_film.place(x=420, y=242, anchor="se")
 report_amount_name.place(x=80, y=245)
 report_amount.place(x=420, y=267, anchor="se")
-report_amount_measure.place(x=425, y= 245)
+report_amount_measure.place(x=425, y=245)
 report_width_name.place(x=80, y=270)
 report_width.place(x=420, y=292, anchor="se")
 report_width_measure.place(x=425, y=270)
