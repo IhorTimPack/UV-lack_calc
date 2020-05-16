@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import json
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами.
@@ -262,31 +263,109 @@ def show_prices():
     price_text_adjustment_cost = Label(prices_window, text="Стоимость приладки")
     price_text_adjustment_cost_measure = Label(prices_window, text="грн.")
     price_text_adjustment_time = Label(prices_window, text="Время приладки")
-    price_text_adjustment_time_measure = Label(prices_window, text="часю")
+    price_text_adjustment_time_measure = Label(prices_window, text="час.")
 
     prices_text_column_less_b3.grid(row=0, column=2)
     prices_text_column_more_b3.grid(row=0, column=3)
-    prices_text_electricity.grid(row=1, column=0)
+    prices_text_electricity.grid(row=1, column=0, sticky=W)
     prices_text_electricity_measure.grid(row=1, column=1)
-    prices_text_drum.grid(row=2, column=0)
+    prices_text_drum.grid(row=2, column=0, sticky=W)
     prices_text_drum_measure.grid(row=2, column=1)
-    price_text_film.grid(row=3, column=0)
+    price_text_film.grid(row=3, column=0, sticky=W)
     price_text_film_measure.grid(row=3, column=1)
-    price_text_dryer.grid(row=4, column=0)
+    price_text_dryer.grid(row=4, column=0, sticky=W)
     price_text_dryer_measure.grid(row=4, column=1)
-    price_text_salary.grid(row=5, column=0)
+    price_text_salary.grid(row=5, column=0, sticky=W)
     price_text_salary_measure.grid(row=5, column=1)
-    price_text_printing.grid(row=6, column=0)
+    price_text_printing.grid(row=6, column=0, sticky=W)
     price_text_printing_measure.grid(row=6, column=1)
-    price_text_speed.grid(row=7, column=0)
+    price_text_speed.grid(row=7, column=0, sticky=W)
     price_text_speed_measure.grid(row=7, column=1)
-    price_text_adjustment_cost.grid(row=8, column=0)
+    price_text_adjustment_cost.grid(row=8, column=0, sticky=W)
     price_text_adjustment_cost_measure.grid(row=8, column=1)
-    price_text_adjustment_time.grid(row=9, column=0)
+    price_text_adjustment_time.grid(row=9, column=0, sticky=W)
     price_text_adjustment_time_measure.grid(row=9, column=1)
 
+    price_entry_electricity = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_drum_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_drum_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_film_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_film_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_dryer_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_dryer_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_salary_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_salary_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_printing_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_printing_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_speed_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_speed_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_adjustment_cost_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_adjustment_cost_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_adjustment_time_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_adjustment_time_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
 
-# Словарь со всеми невычисляемыми составляющими стоимости лакировки.
+    price_entry_electricity.grid(row=1, column=2, columnspan=2)
+    price_entry_drum_less_b3.grid(row=2, column=2)
+    price_entry_drum_more_b3.grid(row=2, column=3)
+    price_entry_film_less_b3.grid(row=3, column=2)
+    price_entry_film_more_b3.grid(row=3, column=3)
+    price_entry_dryer_less_b3.grid(row=4, column=2)
+    price_entry_dryer_more_b3.grid(row=4, column=3)
+    price_entry_salary_less_b3.grid(row=5, column=2)
+    price_entry_salary_more_b3.grid(row=5, column=3)
+    price_entry_printing_less_b3.grid(row=6, column=2)
+    price_entry_printing_more_b3.grid(row=6, column=3)
+    price_entry_speed_less_b3.grid(row=7, column=2)
+    price_entry_speed_more_b3.grid(row=7, column=3)
+    price_entry_adjustment_cost_less_b3.grid(row=8, column=2)
+    price_entry_adjustment_cost_more_b3.grid(row=8, column=3)
+    price_entry_adjustment_time_less_b3.grid(row=9, column=2)
+    price_entry_adjustment_time_more_b3.grid(row=9, column=3)
+
+    price_entry_electricity.insert(0, dic_all_prices["electricity"][0])
+    price_entry_drum_less_b3.insert(0, dic_all_prices["drum"][0])
+    price_entry_drum_more_b3.insert(0, dic_all_prices["drum"][1])
+    price_entry_film_less_b3.insert(0, dic_all_prices["film"][0])
+    price_entry_film_more_b3.insert(0, dic_all_prices["film"][1])
+    price_entry_dryer_less_b3.insert(0, dic_all_prices["dryer"][0])
+    price_entry_dryer_more_b3.insert(0, dic_all_prices["dryer"][1])
+    price_entry_salary_less_b3.insert(0, dic_all_prices["salary"][0])
+    price_entry_salary_more_b3.insert(0, dic_all_prices["salary"][1])
+    price_entry_printing_less_b3.insert(0, dic_all_prices["printing"][0])
+    price_entry_printing_more_b3.insert(0, dic_all_prices["printing"][1])
+    price_entry_speed_less_b3.insert(0, dic_all_prices["speed"][0])
+    price_entry_speed_more_b3.insert(0, dic_all_prices["speed"][1])
+    price_entry_adjustment_cost_less_b3.insert(0, dic_all_prices["adjustment_cost"][0])
+    price_entry_adjustment_cost_more_b3.insert(0, dic_all_prices["adjustment_cost"][1])
+    price_entry_adjustment_time_less_b3.insert(0, dic_all_prices["adjustment_time"][0])
+    price_entry_adjustment_time_more_b3.insert(0, dic_all_prices["adjustment_time"][1])
+
+
+#  Функция для сохранения в файле *.json данных о всех расценках
+def save_data():
+    with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
+        dic_s = {}
+        dic_s.update(dic_all_prices)
+        dic_s.update(dic_type_lack)
+        dic_s.update(dic_type_client)
+        json.dump(dic_s, write_data, ensure_ascii=False)
+
+
+#  Функция для обновления всех расценок данными из файла *.json
+def load_data():
+    with open("UV_lack_calc_data.json", "r", encoding="utf-8") as load_all_data:
+        dic_l = json.load(load_all_data)
+        print(dic_all_prices)
+        for i in dic_l:
+            if i in dic_all_prices:
+                dic_all_prices[i] = dic_l[i]
+            elif i in dic_type_lack:
+                dic_type_lack[i] = dic_l[i]
+            elif i in dic_type_client:
+                dic_type_client[i] = dic_l[i]
+
+
+# Словарь со всеми невычисляемыми составляющими стоимо, ensure_ascii=Falseти лакировки.
 dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [10.5, 10.5], "drum": [220, 300], "film": [35, 70],
                   "salary": [25, 25], "printing": [0.14, 0.2], "speed": [250, 200], "adjustment_cost": [85, 95],
                   "adjustment_time": [0.75, 0.75]}
@@ -309,7 +388,13 @@ root = Tk()
 root.geometry("1200x680+100+35")
 root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
-root.option_add('*tearOff', FALSE)
+root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
+
+#  При старте программы загружаем (меняем) расценки заданные в словарях, на расценки из *.json
+try:
+    load_data()
+except:
+   print("ERROR")
 
 # Создание меню
 menubar = Menu(root)
@@ -318,8 +403,8 @@ menu_file = Menu(menubar)
 menu_edit = Menu(menubar)
 menubar.add_cascade(menu=menu_file, label='Файл')
 menubar.add_cascade(menu=menu_edit, label='Настройки')
-menu_file.add_command(label='New', command=clean)
-menu_file.add_command(label='Open...', command=clean)
+menu_file.add_command(label='Save', command=save_data)
+menu_file.add_command(label='Load...', command=load_data)
 menu_file.add_command(label='Close', command=clean)
 menu_edit.add_command(label='Посмотреть расцени', command=show_prices)
 
