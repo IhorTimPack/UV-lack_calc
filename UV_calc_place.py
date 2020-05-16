@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
+import os
 import json
 
 
@@ -38,7 +40,8 @@ def clean():
     entry_amount.focus()  # Устанавливаем курсор в поле ввода тиража
 
 
-# Функция для проверки перед просчетом корректности заполнения всех необходисых полей.
+# Функция перед просчетом проверяет корректность заполнения всех необходисых полей.
+# Если поле заполнено некорректно, оно меняет свой цвет на красный на 0,3 сек.
 def check_filling(*args):
     if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and \
             entry_percents.get().isdigit():
@@ -341,21 +344,37 @@ def show_prices():
     price_entry_adjustment_time_more_b3.insert(0, dic_all_prices["adjustment_time"][1])
 
 
-#  Функция для сохранения в файле *.json данных о всех расценках
+def write_changed_prices():
+    dic_all_prices["electricity"][0] = price_entry_drum_less_b3.get()
+    dic_all_prices["drum"][0] = price_entry_drum_less_b3.get()
+    dic_all_prices["drum"][1] = price_entry_drum_more_b3.get()
+    dic_all_prices["film"][0] = price_entry_film_less_b3.get()
+    pass
+
+
+#  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
+#  с расценками и загрузились расценки по умолчанию, прописанные в словарях в теле программы, спросить пользователя
+#  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем работали по ним.
 def save_data():
-    with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
-        dic_s = {}
-        dic_s.update(dic_all_prices)
-        dic_s.update(dic_type_lack)
-        dic_s.update(dic_type_client)
-        json.dump(dic_s, write_data, ensure_ascii=False)
+    if bed_load == True:
+        decide = messagebox.askyesno(message="""Обратите внимание. При открытии программы не
+загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
+использовать эти расценки. Все прошлые данные будут\nпотеряны. Убедитесь, что Вы сохраняете актуальные\nрасценки."""
+                                     , title="Сохранение расценок")
+        if decide == False:
+            return
+        with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
+            dic_s = {}
+            dic_s.update(dic_all_prices)
+            dic_s.update(dic_type_lack)
+            dic_s.update(dic_type_client)
+            json.dump(dic_s, write_data, ensure_ascii=False)
 
 
 #  Функция для обновления всех расценок данными из файла *.json
 def load_data():
     with open("UV_lack_calc_data.json", "r", encoding="utf-8") as load_all_data:
         dic_l = json.load(load_all_data)
-        print(dic_all_prices)
         for i in dic_l:
             if i in dic_all_prices:
                 dic_all_prices[i] = dic_l[i]
@@ -390,11 +409,15 @@ root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
 
-#  При старте программы загружаем (меняем) расценки заданные в словарях, на расценки из *.json
+# При старте программы загружаем (меняем) расценки заданные в словарях, на расценки из *.json
 try:
     load_data()
+    bed_load = False  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Удалась.
 except:
-   print("ERROR")
+    bed_load = True  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Не удалась.
+    messagebox.showinfo(message="""При открытии программы не удалось загрузить расценки.
+Будут использоваться расценки по умолчанию.""", title="Не удалось загрузить расценки.")
+    # print(os.path.getctime(r"D:\\Python\UV_calc\UV_calc_place.py"))
 
 # Создание меню
 menubar = Menu(root)
@@ -405,7 +428,7 @@ menubar.add_cascade(menu=menu_file, label='Файл')
 menubar.add_cascade(menu=menu_edit, label='Настройки')
 menu_file.add_command(label='Save', command=save_data)
 menu_file.add_command(label='Load...', command=load_data)
-menu_file.add_command(label='Close', command=clean)
+menu_file.add_command(label='Write', command=write_changed_prices)
 menu_edit.add_command(label='Посмотреть расцени', command=show_prices)
 
 details_frame = Frame(root, width=400, height=1)
