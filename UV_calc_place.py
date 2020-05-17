@@ -6,8 +6,8 @@ import json
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами.
 def set_format(f):
-    global width_sheet
-    global length_sheet
+    # global width_sheet
+    # global length_sheet
     width_sheet = dic_formats[f][0]
     length_sheet = dic_formats[f][1]
     entry_width.delete(0, END)
@@ -242,17 +242,38 @@ def details():
         details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
 
+# Функция создаёт окно пароля и запрашивает его ввод
+def confirm_saving():
+    global password_entry
+    global password_window
+    password_window = Toplevel(root)
+    password_window.title("Введите пароль")
+    password_window.geometry("280x90+200+100")
+    password_entry = Entry(password_window, show="*", justify="center")
+    password_button = Button(password_window, text="Подтвердить", command=check_password)
+    password_entry.pack(padx=5, pady=10)
+    password_button.pack()
+
+
+# Проверка пароля для функции подтверждения сохранения. Если пароль правильный, запускается функция сохранения.
+def check_password():
+    if password_entry.get() == str(55555):
+        save_data()
+        password_window.destroy()
+
+
 # Функция отображения всех расценок
 def show_prices():
     global prices_window
     prices_window = Toplevel(root)
     prices_window.geometry("1200x680+100+35")
 
-    price_button_save = Button(prices_window, text="Сохранить изменения", command=save_data)
+    price_button_save = Button(prices_window, text="Сохранить изменения", command=confirm_saving)
     price_button_save.grid(row=1, column=4)
 
-    price_text_column_less_b3 = Label(prices_window, text="Печатный лист меньше В-3")
-    price_text_column_more_b3 = Label(prices_window, text="Печатный лист больше В-3")
+    price_text_column = Label(prices_window, text="Формат печатного листа")
+    price_text_column_less_b3 = Label(prices_window, text="< В-3")
+    price_text_column_more_b3 = Label(prices_window, text="> В-3")
     price_text_electricity = Label(prices_window, text="Стоимость электричества")
     price_text_electricity_measure = Label(prices_window, text="грн/кВт.")
     price_text_drum = Label(prices_window, text="Стоимость изготовления рамки")
@@ -271,27 +292,36 @@ def show_prices():
     price_text_adjustment_cost_measure = Label(prices_window, text="грн.")
     price_text_adjustment_time = Label(prices_window, text="Время приладки")
     price_text_adjustment_time_measure = Label(prices_window, text="час.")
+    price_text_UL_lack_1_cost = Label(prices_window, text="УФ-лак")
+    price_text_UL_lack_2_cost = Label(prices_window, text="УФ-лак с поднятием")
+    price_text_UL_lack_3_cost = Label(prices_window, text="Глиттер + УФ-лак (1:5)")
+    price_text_UL_lack_4_cost = Label(prices_window, text="Глиттер + УФ-лак с поднятием (1:5)")
 
-    price_text_column_less_b3.grid(row=0, column=2)
-    price_text_column_more_b3.grid(row=0, column=3)
-    price_text_electricity.grid(row=1, column=0, sticky=W)
-    price_text_electricity_measure.grid(row=1, column=1)
-    price_text_drum.grid(row=2, column=0, sticky=W)
-    price_text_drum_measure.grid(row=2, column=1)
-    price_text_film.grid(row=3, column=0, sticky=W)
-    price_text_film_measure.grid(row=3, column=1)
-    price_text_dryer.grid(row=4, column=0, sticky=W)
-    price_text_dryer_measure.grid(row=4, column=1)
-    price_text_salary.grid(row=5, column=0, sticky=W)
-    price_text_salary_measure.grid(row=5, column=1)
-    price_text_printing.grid(row=6, column=0, sticky=W)
-    price_text_printing_measure.grid(row=6, column=1)
-    price_text_speed.grid(row=7, column=0, sticky=W)
-    price_text_speed_measure.grid(row=7, column=1)
-    price_text_adjustment_cost.grid(row=8, column=0, sticky=W)
-    price_text_adjustment_cost_measure.grid(row=8, column=1)
-    price_text_adjustment_time.grid(row=9, column=0, sticky=W)
-    price_text_adjustment_time_measure.grid(row=9, column=1)
+    price_text_column.grid(row=0, column=2, columnspan=2, sticky=EW)
+    price_text_column_less_b3.grid(row=1, column=2)
+    price_text_column_more_b3.grid(row=1, column=3)
+    price_text_electricity.grid(row=2, column=0, sticky=W)
+    price_text_electricity_measure.grid(row=2, column=1)
+    price_text_drum.grid(row=3, column=0, sticky=W)
+    price_text_drum_measure.grid(row=3, column=1)
+    price_text_film.grid(row=4, column=0, sticky=W)
+    price_text_film_measure.grid(row=4, column=1)
+    price_text_dryer.grid(row=5, column=0, sticky=W)
+    price_text_dryer_measure.grid(row=5, column=1)
+    price_text_salary.grid(row=6, column=0, sticky=W)
+    price_text_salary_measure.grid(row=6, column=1)
+    price_text_printing.grid(row=7, column=0, sticky=W)
+    price_text_printing_measure.grid(row=7, column=1)
+    price_text_speed.grid(row=8, column=0, sticky=W)
+    price_text_speed_measure.grid(row=8, column=1)
+    price_text_adjustment_cost.grid(row=9, column=0, sticky=W)
+    price_text_adjustment_cost_measure.grid(row=9, column=1)
+    price_text_adjustment_time.grid(row=10, column=0, sticky=W)
+    price_text_adjustment_time_measure.grid(row=10, column=1)
+    price_text_UL_lack_1_cost.grid(row=12, column=0, sticky=W)
+    price_text_UL_lack_2_cost.grid(row=13, column=0, sticky=W)
+    price_text_UL_lack_3_cost.grid(row=14, column=0, sticky=W)
+    price_text_UL_lack_4_cost.grid(row=15, column=0, sticky=W)
 
     global price_entry_electricity
     global price_entry_drum_less_b3
@@ -329,23 +359,23 @@ def show_prices():
     price_entry_adjustment_time_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
     price_entry_adjustment_time_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
 
-    price_entry_electricity.grid(row=1, column=2, columnspan=2)
-    price_entry_drum_less_b3.grid(row=2, column=2)
-    price_entry_drum_more_b3.grid(row=2, column=3)
-    price_entry_film_less_b3.grid(row=3, column=2)
-    price_entry_film_more_b3.grid(row=3, column=3)
-    price_entry_dryer_less_b3.grid(row=4, column=2)
-    price_entry_dryer_more_b3.grid(row=4, column=3)
-    price_entry_salary_less_b3.grid(row=5, column=2)
-    price_entry_salary_more_b3.grid(row=5, column=3)
-    price_entry_printing_less_b3.grid(row=6, column=2)
-    price_entry_printing_more_b3.grid(row=6, column=3)
-    price_entry_speed_less_b3.grid(row=7, column=2)
-    price_entry_speed_more_b3.grid(row=7, column=3)
-    price_entry_adjustment_cost_less_b3.grid(row=8, column=2)
-    price_entry_adjustment_cost_more_b3.grid(row=8, column=3)
-    price_entry_adjustment_time_less_b3.grid(row=9, column=2)
-    price_entry_adjustment_time_more_b3.grid(row=9, column=3)
+    price_entry_electricity.grid(row=2, column=2, columnspan=2)
+    price_entry_drum_less_b3.grid(row=3, column=2)
+    price_entry_drum_more_b3.grid(row=3, column=3)
+    price_entry_film_less_b3.grid(row=4, column=2)
+    price_entry_film_more_b3.grid(row=4, column=3)
+    price_entry_dryer_less_b3.grid(row=5, column=2)
+    price_entry_dryer_more_b3.grid(row=5, column=3)
+    price_entry_salary_less_b3.grid(row=6, column=2)
+    price_entry_salary_more_b3.grid(row=6, column=3)
+    price_entry_printing_less_b3.grid(row=7, column=2)
+    price_entry_printing_more_b3.grid(row=7, column=3)
+    price_entry_speed_less_b3.grid(row=8, column=2)
+    price_entry_speed_more_b3.grid(row=8, column=3)
+    price_entry_adjustment_cost_less_b3.grid(row=9, column=2)
+    price_entry_adjustment_cost_more_b3.grid(row=9, column=3)
+    price_entry_adjustment_time_less_b3.grid(row=10, column=2)
+    price_entry_adjustment_time_more_b3.grid(row=10, column=3)
 
     price_entry_electricity.insert(0, dic_all_prices["electricity"][0])
     price_entry_drum_less_b3.insert(0, dic_all_prices["drum"][0])
@@ -417,7 +447,7 @@ def load_data():
                 dic_type_client[i] = dic_l[i]
 
 
-# Словарь со всеми невычисляемыми составляющими стоимо, ensure_ascii=Falseти лакировки.
+# Словарь со всеми постоянными составляющими стоимости лакировки.
 dic_all_prices = {"electricity": [2.8, 2.8], "dryer": [10.5, 10.5], "drum": [220, 300], "film": [35, 70],
                   "salary": [25, 25], "printing": [0.14, 0.2], "speed": [250, 200], "adjustment_cost": [85, 95],
                   "adjustment_time": [0.75, 0.75]}
@@ -442,19 +472,19 @@ root.iconbitmap("TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
 
-# При старте программы загружаем (меняем) расценки заданные в словарях, на расценки из *.json
-try:
+# При старте программы загружаем заданные в словарях расценки, на расценки из *.json
+try:  # Проверяем, удалось ли нам загрузить расценки из фала *.json
     load_data()
-    succcessful_load = True  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Удалась.
+    succcessful_load = True  # Переменная показывает, что файл загрузился, расценки обновлены.
 except:  # Загрузка данных не удалась.
-    succcessful_load = False
+    succcessful_load = False  # Переменная показывает, что файл не загрузился, расценки не обновлены.
     decide = messagebox.askyesno(message="""При открытии программы не удалось загрузить расценки.
 Будут использоваться расценки по умолчанию. Сохранить\nрасценки по умолчанию для дальнейшего использования,
-или Вы попробуете найти файл с настройками и вернуться\nк ним при следующей загрузке""", title="Не удалось загрузить расценки.")
-    if decide == True:
+или Вы попробуете найти файл с настройками и вернуться\nк ним при следующей загрузке""", title="Проблемы с загрузкой данных.")
+    if decide == True:  # Пользователь согласился перезаписать и использовать расценки по умолчанию.
         succcessful_load = True
         show_prices()
-        save_data()
+        save_data()  # Создаём новый файл *.json, в котором будут расценки по умолчанию.
         prices_window.destroy()
     # print(os.path.getctime(r"D:\\Python\UV_calc\UV_calc_place.py"))
 
@@ -483,7 +513,7 @@ type_client.set("премиум")
 button_type_client = OptionMenu(root, type_client, *dic_type_client)  # Кнопка для выбора типа клиента
 button_type_client.place(x=170, y=42)
 
-film_reused = StringVar()
+film_reused = StringVar()  # Поле флажок, для выбора, считать ли в заказе пленку, или она повторная/заказчика
 film_reused.set("новая")
 checkbutton_film_reused = Checkbutton(root, variable=film_reused, onvalue="новая",
                                       offvalue="повторная или заказчика")
