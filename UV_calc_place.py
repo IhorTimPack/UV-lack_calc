@@ -250,6 +250,7 @@ def confirm_saving():
     password_window.title("Введите пароль")
     password_window.geometry("280x90+200+100")
     password_entry = Entry(password_window, show="*", justify="center")
+    password_entry.focus()  # Помещаем курсор в поле ввода пароля
     password_button = Button(password_window, text="Подтвердить", command=check_password)
     password_entry.pack(padx=5, pady=10)
     password_button.pack()
@@ -260,16 +261,23 @@ def check_password():
     if password_entry.get() == str(55555):
         save_data()
         password_window.destroy()
+    else:
+        password_entry.config(bg="red")
+        password_entry.after(300, lambda: password_entry.config(bg="white"))
+        password_entry.delete(0, END)
 
 
 # Функция отображения всех расценок
 def show_prices():
-    global prices_window
-    prices_window = Toplevel(root)
-    prices_window.geometry("1200x680+100+35")
+    global prices_pop_up
+    prices_pop_up = Toplevel(root)
+    prices_pop_up.title("Расценки, нормы расхода")
+    prices_pop_up.geometry("1200x680+100+35")
+    prices_window = Frame(prices_pop_up)
+    prices_window.grid(row=0, column=0, padx=20, pady=20)
 
     price_button_save = Button(prices_window, text="Сохранить изменения", command=confirm_saving)
-    price_button_save.grid(row=1, column=4)
+    price_button_save.grid(row=0, column=0, sticky=EW)
 
     price_text_column = Label(prices_window, text="Формат печатного листа")
     price_text_column_less_b3 = Label(prices_window, text="< В-3")
@@ -292,10 +300,12 @@ def show_prices():
     price_text_adjustment_cost_measure = Label(prices_window, text="грн.")
     price_text_adjustment_time = Label(prices_window, text="Время приладки")
     price_text_adjustment_time_measure = Label(prices_window, text="час.")
-    price_text_UL_lack_1_cost = Label(prices_window, text="УФ-лак")
-    price_text_UL_lack_2_cost = Label(prices_window, text="УФ-лак с поднятием")
-    price_text_UL_lack_3_cost = Label(prices_window, text="Глиттер + УФ-лак (1:5)")
-    price_text_UL_lack_4_cost = Label(prices_window, text="Глиттер + УФ-лак с поднятием (1:5)")
+    price_text_UV_lack_column_1 = Label(prices_window, text="Ст-ть, грн/кг.")
+    price_text_UV_lack_column_2 = Label(prices_window, text="Расход, кг/м.кв.")
+    price_text_UV_lack_1 = Label(prices_window, text="УФ-лак")
+    price_text_UV_lack_2 = Label(prices_window, text="УФ-лак с поднятием")
+    price_text_UV_lack_3 = Label(prices_window, text="Глиттер + УФ-лак (1:5)")
+    price_text_UV_lack_4 = Label(prices_window, text="Глиттер + УФ-лак с поднятием (1:5)")
 
     price_text_column.grid(row=0, column=2, columnspan=2, sticky=EW)
     price_text_column_less_b3.grid(row=1, column=2)
@@ -318,10 +328,12 @@ def show_prices():
     price_text_adjustment_cost_measure.grid(row=9, column=1)
     price_text_adjustment_time.grid(row=10, column=0, sticky=W)
     price_text_adjustment_time_measure.grid(row=10, column=1)
-    price_text_UL_lack_1_cost.grid(row=12, column=0, sticky=W)
-    price_text_UL_lack_2_cost.grid(row=13, column=0, sticky=W)
-    price_text_UL_lack_3_cost.grid(row=14, column=0, sticky=W)
-    price_text_UL_lack_4_cost.grid(row=15, column=0, sticky=W)
+    price_text_UV_lack_column_1.grid(row=11, column=2, pady=3, sticky=S)
+    price_text_UV_lack_column_2.grid(row=11, column=3, pady=3, sticky=S)
+    price_text_UV_lack_1.grid(row=12, column=0, sticky=W)
+    price_text_UV_lack_2.grid(row=13, column=0, sticky=W)
+    price_text_UV_lack_3.grid(row=14, column=0, sticky=W)
+    price_text_UV_lack_4.grid(row=15, column=0, sticky=W)
 
     global price_entry_electricity
     global price_entry_drum_less_b3
@@ -340,6 +352,14 @@ def show_prices():
     global price_entry_adjustment_cost_more_b3
     global price_entry_adjustment_time_less_b3
     global price_entry_adjustment_time_more_b3
+    global price_entry_UV_lack_1_cost
+    global price_entry_UV_lack_1_outgo
+    global price_entry_UV_lack_2_cost
+    global price_entry_UV_lack_2_outgo
+    global price_entry_UV_lack_3_cost
+    global price_entry_UV_lack_3_outgo
+    global price_entry_UV_lack_4_cost
+    global price_entry_UV_lack_4_outgo
 
     price_entry_electricity = Entry(prices_window, width=10, justify=RIGHT)
     price_entry_drum_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
@@ -358,6 +378,14 @@ def show_prices():
     price_entry_adjustment_cost_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
     price_entry_adjustment_time_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
     price_entry_adjustment_time_more_b3 = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_1_cost = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_1_outgo = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_2_cost = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_2_outgo = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_3_cost = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_3_outgo = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_4_cost = Entry(prices_window, width=10, justify=RIGHT)
+    price_entry_UV_lack_4_outgo = Entry(prices_window, width=10, justify=RIGHT)
 
     price_entry_electricity.grid(row=2, column=2, columnspan=2)
     price_entry_drum_less_b3.grid(row=3, column=2)
@@ -376,6 +404,14 @@ def show_prices():
     price_entry_adjustment_cost_more_b3.grid(row=9, column=3)
     price_entry_adjustment_time_less_b3.grid(row=10, column=2)
     price_entry_adjustment_time_more_b3.grid(row=10, column=3)
+    price_entry_UV_lack_1_cost.grid(row=12, column=2)
+    price_entry_UV_lack_1_outgo.grid(row=12, column=3)
+    price_entry_UV_lack_2_cost.grid(row=13, column=2)
+    price_entry_UV_lack_2_outgo.grid(row=13, column=3)
+    price_entry_UV_lack_3_cost.grid(row=14, column=2)
+    price_entry_UV_lack_3_outgo.grid(row=14, column=3)
+    price_entry_UV_lack_4_cost.grid(row=15, column=2)
+    price_entry_UV_lack_4_outgo.grid(row=15, column=3)
 
     price_entry_electricity.insert(0, dic_all_prices["electricity"][0])
     price_entry_drum_less_b3.insert(0, dic_all_prices["drum"][0])
@@ -394,6 +430,14 @@ def show_prices():
     price_entry_adjustment_cost_more_b3.insert(0, dic_all_prices["adjustment_cost"][1])
     price_entry_adjustment_time_less_b3.insert(0, dic_all_prices["adjustment_time"][0])
     price_entry_adjustment_time_more_b3.insert(0, dic_all_prices["adjustment_time"][1])
+    price_entry_UV_lack_1_cost.insert(0, dic_type_lack["УФ-лак"][0])
+    price_entry_UV_lack_1_outgo.insert(0, dic_type_lack["УФ-лак"][1])
+    price_entry_UV_lack_2_cost.insert(0, dic_type_lack["УФ-лак с поднятием"][0])
+    price_entry_UV_lack_2_outgo.insert(0, dic_type_lack["УФ-лак с поднятием"][1])
+    price_entry_UV_lack_3_cost.insert(0, dic_type_lack["Глиттер + УФ-лак (1:5)"][0])
+    price_entry_UV_lack_3_outgo.insert(0, dic_type_lack["Глиттер + УФ-лак (1:5)"][1])
+    price_entry_UV_lack_4_cost.insert(0, dic_type_lack["Глиттер + УФ-лак с поднятием (1:5)"][0])
+    price_entry_UV_lack_4_outgo.insert(0, dic_type_lack["Глиттер + УФ-лак с поднятием (1:5)"][1])
 
 
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
@@ -418,6 +462,15 @@ def save_data():
     dic_all_prices["adjustment_cost"][1] = price_entry_adjustment_cost_more_b3.get()
     dic_all_prices["adjustment_time"][0] = price_entry_adjustment_time_less_b3.get()
     dic_all_prices["adjustment_time"][1] = price_entry_adjustment_time_more_b3.get()
+    dic_type_lack["УФ-лак"][0] = price_entry_UV_lack_1_cost.get()
+    dic_type_lack["УФ-лак"][1] = price_entry_UV_lack_1_outgo.get()
+    dic_type_lack["УФ-лак с поднятием"][0] = price_entry_UV_lack_2_cost.get()
+    dic_type_lack["УФ-лак с поднятием"][1] = price_entry_UV_lack_2_outgo.get()
+    dic_type_lack["Глиттер + УФ-лак (1:5)"][0] = price_entry_UV_lack_3_cost.get()
+    dic_type_lack["Глиттер + УФ-лак (1:5)"][1] = price_entry_UV_lack_3_outgo.get()
+    dic_type_lack["Глиттер + УФ-лак с поднятием (1:5)"][0] = price_entry_UV_lack_4_cost.get()
+    dic_type_lack["Глиттер + УФ-лак с поднятием (1:5)"][1] = price_entry_UV_lack_4_outgo.get()
+
     if succcessful_load == False:
         decide = messagebox.askyesno(message="""Обратите внимание. При открытии программы не
 загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
@@ -485,7 +538,7 @@ except:  # Загрузка данных не удалась.
         succcessful_load = True
         show_prices()
         save_data()  # Создаём новый файл *.json, в котором будут расценки по умолчанию.
-        prices_window.destroy()
+        prices_pop_up.destroy()
     # print(os.path.getctime(r"D:\\Python\UV_calc\UV_calc_place.py"))
 
 # Создание меню
@@ -497,7 +550,7 @@ menubar.add_cascade(menu=menu_file, label='Файл')
 menubar.add_cascade(menu=menu_edit, label='Настройки')
 menu_file.add_command(label='Save', command=save_data)
 menu_file.add_command(label='Load...', command=load_data)
-menu_edit.add_command(label='Посмотреть расцени', command=show_prices)
+menu_edit.add_command(label='Посмотреть расценки', command=show_prices)
 
 details_frame = Frame(root, width=400, height=1)
 details_frame.place(x=70, y=400)
