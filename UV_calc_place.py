@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import os
 import json
 
 
@@ -245,14 +244,19 @@ def details():
 
 # Функция отображения всех расценок
 def show_prices():
+    global prices_window
     prices_window = Toplevel(root)
     prices_window.geometry("1200x680+100+35")
-    prices_text_column_less_b3 = Label(prices_window, text="Печатный лист меньше В-3")
-    prices_text_column_more_b3 = Label(prices_window, text="Печатный лист больше В-3")
-    prices_text_electricity = Label(prices_window, text="Стоимость электричества")
-    prices_text_electricity_measure = Label(prices_window, text="грн/кВт.")
-    prices_text_drum = Label(prices_window, text="Стоимость изготовления рамки")
-    prices_text_drum_measure = Label(prices_window, text="грн/шт.")
+
+    price_button_save = Button(prices_window, text="Сохранить изменения", command=save_data)
+    price_button_save.grid(row=1, column=4)
+
+    price_text_column_less_b3 = Label(prices_window, text="Печатный лист меньше В-3")
+    price_text_column_more_b3 = Label(prices_window, text="Печатный лист больше В-3")
+    price_text_electricity = Label(prices_window, text="Стоимость электричества")
+    price_text_electricity_measure = Label(prices_window, text="грн/кВт.")
+    price_text_drum = Label(prices_window, text="Стоимость изготовления рамки")
+    price_text_drum_measure = Label(prices_window, text="грн/шт.")
     price_text_film = Label(prices_window, text="Стоимость плёнки")
     price_text_film_measure = Label(prices_window, text="грн/шт.")
     price_text_dryer = Label(prices_window, text="Мощность потребляемой электроэнергии")
@@ -268,12 +272,12 @@ def show_prices():
     price_text_adjustment_time = Label(prices_window, text="Время приладки")
     price_text_adjustment_time_measure = Label(prices_window, text="час.")
 
-    prices_text_column_less_b3.grid(row=0, column=2)
-    prices_text_column_more_b3.grid(row=0, column=3)
-    prices_text_electricity.grid(row=1, column=0, sticky=W)
-    prices_text_electricity_measure.grid(row=1, column=1)
-    prices_text_drum.grid(row=2, column=0, sticky=W)
-    prices_text_drum_measure.grid(row=2, column=1)
+    price_text_column_less_b3.grid(row=0, column=2)
+    price_text_column_more_b3.grid(row=0, column=3)
+    price_text_electricity.grid(row=1, column=0, sticky=W)
+    price_text_electricity_measure.grid(row=1, column=1)
+    price_text_drum.grid(row=2, column=0, sticky=W)
+    price_text_drum_measure.grid(row=2, column=1)
     price_text_film.grid(row=3, column=0, sticky=W)
     price_text_film_measure.grid(row=3, column=1)
     price_text_dryer.grid(row=4, column=0, sticky=W)
@@ -288,6 +292,24 @@ def show_prices():
     price_text_adjustment_cost_measure.grid(row=8, column=1)
     price_text_adjustment_time.grid(row=9, column=0, sticky=W)
     price_text_adjustment_time_measure.grid(row=9, column=1)
+
+    global price_entry_electricity
+    global price_entry_drum_less_b3
+    global price_entry_drum_more_b3
+    global price_entry_film_less_b3
+    global price_entry_film_more_b3
+    global price_entry_dryer_less_b3
+    global price_entry_dryer_more_b3
+    global price_entry_salary_less_b3
+    global price_entry_salary_more_b3
+    global price_entry_printing_less_b3
+    global price_entry_printing_more_b3
+    global price_entry_speed_less_b3
+    global price_entry_speed_more_b3
+    global price_entry_adjustment_cost_less_b3
+    global price_entry_adjustment_cost_more_b3
+    global price_entry_adjustment_time_less_b3
+    global price_entry_adjustment_time_more_b3
 
     price_entry_electricity = Entry(prices_window, width=10, justify=RIGHT)
     price_entry_drum_less_b3 = Entry(prices_window, width=10, justify=RIGHT)
@@ -344,31 +366,42 @@ def show_prices():
     price_entry_adjustment_time_more_b3.insert(0, dic_all_prices["adjustment_time"][1])
 
 
-def write_changed_prices():
-    dic_all_prices["electricity"][0] = price_entry_drum_less_b3.get()
-    dic_all_prices["drum"][0] = price_entry_drum_less_b3.get()
-    dic_all_prices["drum"][1] = price_entry_drum_more_b3.get()
-    dic_all_prices["film"][0] = price_entry_film_less_b3.get()
-    pass
-
-
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
 #  с расценками и загрузились расценки по умолчанию, прописанные в словарях в теле программы, спросить пользователя
 #  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем работали по ним.
 def save_data():
-    if bed_load == True:
+    dic_all_prices["electricity"][0] = price_entry_electricity.get()
+    dic_all_prices["electricity"][1] = price_entry_electricity.get()
+    dic_all_prices["drum"][0] = price_entry_drum_less_b3.get()
+    dic_all_prices["drum"][1] = price_entry_drum_more_b3.get()
+    dic_all_prices["film"][0] = price_entry_film_less_b3.get()
+    dic_all_prices["film"][1] = price_entry_film_more_b3.get()
+    dic_all_prices["dryer"][0] = price_entry_dryer_less_b3.get()
+    dic_all_prices["dryer"][1] = price_entry_dryer_more_b3.get()
+    dic_all_prices["salary"][0] = price_entry_salary_less_b3.get()
+    dic_all_prices["salary"][1] = price_entry_salary_more_b3.get()
+    dic_all_prices["printing"][0] = price_entry_printing_less_b3.get()
+    dic_all_prices["printing"][1] = price_entry_printing_more_b3.get()
+    dic_all_prices["speed"][0] = price_entry_speed_less_b3.get()
+    dic_all_prices["speed"][1] = price_entry_speed_more_b3.get()
+    dic_all_prices["adjustment_cost"][0] = price_entry_adjustment_cost_less_b3.get()
+    dic_all_prices["adjustment_cost"][1] = price_entry_adjustment_cost_more_b3.get()
+    dic_all_prices["adjustment_time"][0] = price_entry_adjustment_time_less_b3.get()
+    dic_all_prices["adjustment_time"][1] = price_entry_adjustment_time_more_b3.get()
+    if succcessful_load == False:
         decide = messagebox.askyesno(message="""Обратите внимание. При открытии программы не
 загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
 использовать эти расценки. Все прошлые данные будут\nпотеряны. Убедитесь, что Вы сохраняете актуальные\nрасценки."""
                                      , title="Сохранение расценок")
+
         if decide == False:
             return
-        with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
-            dic_s = {}
-            dic_s.update(dic_all_prices)
-            dic_s.update(dic_type_lack)
-            dic_s.update(dic_type_client)
-            json.dump(dic_s, write_data, ensure_ascii=False)
+    with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
+        dic_s = {}
+        dic_s.update(dic_all_prices)
+        dic_s.update(dic_type_lack)
+        dic_s.update(dic_type_client)
+        json.dump(dic_s, write_data, ensure_ascii=False)
 
 
 #  Функция для обновления всех расценок данными из файла *.json
@@ -412,11 +445,17 @@ root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся 
 # При старте программы загружаем (меняем) расценки заданные в словарях, на расценки из *.json
 try:
     load_data()
-    bed_load = False  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Удалась.
-except:
-    bed_load = True  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Не удалась.
-    messagebox.showinfo(message="""При открытии программы не удалось загрузить расценки.
-Будут использоваться расценки по умолчанию.""", title="Не удалось загрузить расценки.")
+    succcessful_load = True  # Устанавливаем удалась ли нам загрузка данных при старте прошраммы. Удалась.
+except:  # Загрузка данных не удалась.
+    succcessful_load = False
+    decide = messagebox.askyesno(message="""При открытии программы не удалось загрузить расценки.
+Будут использоваться расценки по умолчанию. Сохранить\nрасценки по умолчанию для дальнейшего использования,
+или Вы попробуете найти файл с настройками и вернуться\nк ним при следующей загрузке""", title="Не удалось загрузить расценки.")
+    if decide == True:
+        succcessful_load = True
+        show_prices()
+        save_data()
+        prices_window.destroy()
     # print(os.path.getctime(r"D:\\Python\UV_calc\UV_calc_place.py"))
 
 # Создание меню
@@ -428,7 +467,6 @@ menubar.add_cascade(menu=menu_file, label='Файл')
 menubar.add_cascade(menu=menu_edit, label='Настройки')
 menu_file.add_command(label='Save', command=save_data)
 menu_file.add_command(label='Load...', command=load_data)
-menu_file.add_command(label='Write', command=write_changed_prices)
 menu_edit.add_command(label='Посмотреть расцени', command=show_prices)
 
 details_frame = Frame(root, width=400, height=1)
