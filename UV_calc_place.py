@@ -39,8 +39,9 @@ def clean():
     entry_amount.focus()  # Устанавливаем курсор в поле ввода тиража
 
 
-# Функция перед просчетом проверяет корректность заполнения всех необходисых полей.
+# Функция перед просчетом проверяет корректность заполнения всех необходимых полей.
 # Если поле заполнено некорректно, оно меняет свой цвет на красный на 0,3 сек.
+# Если всё заполнено корректно, запускается функция "calculate", которая проводит расчёт.
 def check_filling(*args):
     if entry_width.get().isdigit() and entry_length.get().isdigit() and entry_amount.get().isdigit() and \
             entry_percents.get().isdigit():
@@ -87,7 +88,7 @@ def calculate_result(i, amount):
     return answer
 
 
-# Функция отрабатывает команду "Рассчитать"
+# Функция отрабатывает команду "Рассчитать". Запускается функцией "check filling".
 def calculate():
     # Если один из размеров листа больше 500 мм, цены берем для второй категории заказа
     if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
@@ -223,7 +224,7 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
     canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y,
                                text=f"{float((calculate_result(i, 1000000) / 1000000)):.3f}",
                                anchor=E)  # Подпись на оси "у". Ст-ть при максимально возможном тираже
-
+    # В цикле рисуем график маленькими отрезками с шагом по оси "х" в один пиксель
     for j in range(1, x_max + 1):
         result_graph = calculate_result(i, graph_amount) / graph_amount
         graph_amount += scale_x_graph_amount
@@ -251,17 +252,18 @@ def confirm_saving():
     password_window.geometry("280x90+200+100")
     password_entry = Entry(password_window, show="*", justify="center")
     password_entry.focus()  # Помещаем курсор в поле ввода пароля
+    password_window.bind("<Return>", check_password)  # Можем подтвердить ввод пароля нажатием Enter
     password_button = Button(password_window, text="Подтвердить", command=check_password)
     password_entry.pack(padx=5, pady=10)
     password_button.pack()
 
 
 # Проверка пароля для функции подтверждения сохранения. Если пароль правильный, запускается функция сохранения.
-def check_password():
+def check_password(*args):
     if password_entry.get() == str(55555):
         save_data()
         password_window.destroy()
-    else:
+    else: # Если пароль неверный поле ввода меняет цвет на красный на 0,3 сек и ждём повторного ввода пароля.
         password_entry.config(bg="red")
         password_entry.after(300, lambda: password_entry.config(bg="white"))
         password_entry.delete(0, END)
@@ -444,6 +446,7 @@ def show_prices():
 #  с расценками и загрузились расценки по умолчанию, прописанные в словарях в теле программы, спросить пользователя
 #  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем работали по ним.
 def save_data():
+    # Переписываем все расценки из полей ввода в соответствующие словари
     dic_all_prices["electricity"][0] = price_entry_electricity.get()
     dic_all_prices["electricity"][1] = price_entry_electricity.get()
     dic_all_prices["drum"][0] = price_entry_drum_less_b3.get()
@@ -476,7 +479,8 @@ def save_data():
 загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
 использовать эти расценки. Все прошлые данные будут\nпотеряны. Убедитесь, что Вы сохраняете актуальные\nрасценки."""
                                      , title="Сохранение расценок")
-
+        # Пользователь отказался записывать текущие расценки в файл *.json. Продолжаем работать с текущими расценками
+        # до момента закрытия текущей программы
         if decide == False:
             return
     with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
