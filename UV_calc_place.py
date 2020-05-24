@@ -1,10 +1,10 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-# from tkinter import filedialog
 import json
 import time
 import os
+import os.path
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами из словаря.
@@ -268,7 +268,8 @@ def check_password(*args):
         password_entry.delete(0, END)
 
 
-# Функция создает окно для ввода имени создаваемого профиля
+# Функция создает окно для ввода имени создаваемого профиля. После ввода имени профиля после нажатия клавиши "Enter"
+# или нажатия на кнопку "Сохранить профиль" запускается на выполнение функция "save_profile"
 def create_profile():
     global create_profile_entry
     global create_profile_window
@@ -284,8 +285,8 @@ def create_profile():
     create_profile_button.pack()
 
 
-# Функция добавляет в соответствующий словарь путь для вновь созданного профиля, даёт команду на сохранения файла
-# с расценками и файла с перечнем всех профилей
+# Функция добавляет в соответствующий словарь название файла в котором будут данные создаваемого профиля,
+# записывает в переменную путь к этому файлу с данными и даёт команду на сохранения файла
 def save_profile(*args):
     global path_data
     dic_name_file_profile[create_profile_entry.get()] = "UV_lack_calc_data_" + create_profile_entry.get() + ".json"
@@ -298,16 +299,22 @@ def save_profile(*args):
 
 # Функция считывает выбранное из раскрывающегося списка название профиля, формирует переменную с указанием пути к
 # файлу с профилем. Загружает данный профиль и обновляет данные окна разрушая и заново его создавая.
-def switch_profile():
+def switch_profile(*args):
     global path_data
     global selected_profile
     selected_profile = price_type_profile.get()  # Присваиваем значение выбранного профиля
     type_profile_var.set(selected_profile)  # В переменную записываем название выбранного профиля для отображения в главном окне
     path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к выбранному профилю
-    load_data()  # Загружаем в программу данные расценок выбранного профиля
-    check_filling()  # Пересчитываем расчет для выбранного профиля
-    prices_pop_up.destroy()
-    show_prices()
+    if os.path.isfile(path_data):
+        load_data()  # Загружаем в программу данные расценок выбранного профиля
+        check_filling()  # Пересчитываем расчет для выбранного профиля
+        prices_pop_up.destroy()
+        show_prices()
+    else: # Программа не нашло файл данными для данного профиля, берем данные из "Основного" профиля.
+        selected_profile = "Основной"
+        check_filling()  # Пересчитываем расчет для выбранного профиля
+        prices_pop_up.destroy()
+        show_prices()
 
 
 # Функция отображения всех расценок
@@ -317,14 +324,13 @@ def show_prices():
     prices_pop_up.title("Расценки, нормы расхода")
     prices_pop_up.geometry("1200x680+100+35")
     prices_pop_up.grab_set()
-    # prices_pop_up.lift(aboveThis=root)
     prices_window = Frame(prices_pop_up)
     prices_window.grid(row=0, column=0, padx=20, pady=20)
 
     price_button_save = Button(prices_window, text="Сохранить изменения в текущем профиле", command=confirm_saving)
     price_button_save_another = Button(prices_window, text="Создать новый профиль и сохранить изменения", command=create_profile)
-    price_button_save.grid(row=21, column=0, columnspan=2, padx=5, sticky=EW)
-    price_button_save_another.grid(row=22, column=0, columnspan=2, padx=5, sticky=EW)
+    price_button_save.grid(row=20, column=0, columnspan=2, padx=5, pady=10, sticky=EW)
+    price_button_save_another.grid(row=21, column=0, columnspan=2, padx=5, sticky=EW)
 
     # Выбор профиля из раскрывающекося списка и загрузка его в программу.
     global price_type_profile
@@ -332,12 +338,10 @@ def show_prices():
     price_type_profile.set(selected_profile)
     price_text_select = Label(prices_window, text="Сменить профиль:")
     price_text_title = Label(prices_window, text="Профиль: " + price_type_profile.get(), font="TkDefaultFont 9 bold italic")
-    price_text_select.grid(row=20, column=2, pady=5, columnspan=2)
+    price_text_select.grid(row=20, column=2, columnspan=2)
     price_text_title.grid(row=0, column=0)
-    price_button_type_profile = OptionMenu(prices_window, price_type_profile, *dic_name_file_profile)
+    price_button_type_profile = OptionMenu(prices_window, price_type_profile, *dic_name_file_profile, command=switch_profile)
     price_button_type_profile.grid(row=21, column=2, columnspan=2, padx=5, sticky=EW)
-    price_button_type_profile_confirm = Button(prices_window, text="Подтвердить", command=switch_profile)
-    price_button_type_profile_confirm.grid(row=22, column=2, columnspan=2, padx=5, sticky=EW)
 
     price_text_column = Label(prices_window, text="Формат печатного листа", font="TkDefaultFont 8 bold")
     price_text_column_less_b3 = Label(prices_window, text="< В-3", font="TkDefaultFont 8 bold")
@@ -527,7 +531,9 @@ def show_prices():
     separator_line_3.place(x=0, y=432, width=500)
 
 
-# Функция формирует окно, в котором можно увидеть путь к файлам профилей, удалить ненужные профили
+# Функция формирует окно, в котором можно увидеть путь к файлам профилей, увидеть список всех профилей, дату
+# последнего редактирования каждого профиля, статус (доступность) файла с настройками для каждого профиля ии удалить
+# ненужные профили.
 def manage_profiles():
     manage_profiles_pop_up = Toplevel(root)
     manage_profiles_pop_up.title("Управление профилями")
@@ -537,15 +543,46 @@ def manage_profiles():
     manage_profiles_window = Frame(manage_profiles_pop_up)
     manage_profiles_window.grid(row=0, column=0, padx=20, pady=20)
 
-    manage_text_path_name = Label(manage_profiles_window, text="Путь, по которому размещаются конфигурационные: файлы")
-    manage_text_path = Label(manage_profiles_window, text=path_folder)
-    manage_text_path_name.grid(row=0, column=0)
-    manage_text_path.grid(row=0, column=1)
+    # Вложенная функция удаляет профиль выбранный из списка профилей и удаляет с диска файл этого профиля
+    def delete_profile(*args):  # аргументом функции является название удаляемого профайла
+        if manage_type_profile.get() != "Основной":
+            path_temp = path_folder + "\\" + dic_name_file_profile[manage_type_profile.get()]
+            dic_name_file_profile.pop(manage_type_profile.get())
+            save_list_profiles()
+            if os.path.isfile(path_temp):
+                os.remove(path_temp)
+            manage_profiles_pop_up.destroy()
+            manage_profiles()
 
-    manage_text_test_file = Label(manage_profiles_window, text=path_profile)
-    manage_text_test = Label(manage_profiles_window, text=time.strftime('%d-%m-%Y  %H:%M', time.localtime(os.path.getmtime(path_profile))))
-    manage_text_test_file.grid(row=1, column=0)
-    manage_text_test.grid(row=1, column=1)
+    manage_text_path_name = Label(manage_profiles_window, text="Путь, по которому раcположены конфигурационные файлы:")
+    manage_text_path = Label(manage_profiles_window, text=path_folder)
+    manage_text_title_name = Label(manage_profiles_window, text="Название профиля", font="TkDefaultFont 8 bold")
+    manage_text_title_status = Label(manage_profiles_window, text="Состояние файла профиля", font="TkDefaultFont 8 bold")
+    manage_text_title_date = Label(manage_profiles_window, text="Дата изменения профиля", font="TkDefaultFont 8 bold")
+    manage_text_path_name.grid(row=0, column=0, columnspan=2)
+    manage_text_path.grid(row=0, column=2)
+    manage_text_title_name.grid(row=1, column=0)
+    manage_text_title_status.grid(row=1, column=1)
+    manage_text_title_date.grid(row=1, column=2)
+
+    j = 1
+    for i in dic_name_file_profile:
+        path_temp = path_folder + "\\" + dic_name_file_profile[i]
+        manage_text_file = Label(manage_profiles_window, text=i)
+        manage_text_file.grid(row=j + 1, column=0)
+        if os.path.isfile(path_temp):
+            manage_text_date = Label(manage_profiles_window, text=time.strftime('%d-%m-%Y  %H:%M', time.localtime(os.path.getmtime(path_temp))))
+            manage_text_date.grid(row=j + 1, column=2)
+            manage_text_status = Label(manage_profiles_window, text="Ок")
+        else:
+            manage_text_status = Label(manage_profiles_window, text="Файл не найден")
+        manage_text_status.grid(row=j + 1, column=1)
+        j += 1
+    manage_type_profile = StringVar()
+    manage_type_profile.set("Выберите профиль для удаления")
+    # manage_type_profile.set(selected_profile)
+    manage_button_type_profile = OptionMenu(manage_profiles_window, manage_type_profile, *dic_name_file_profile, command=delete_profile)
+    manage_button_type_profile.grid(row=j+1, column=0)
 
 
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
@@ -658,7 +695,7 @@ dic_name_file_profile = {"Основной": "UV_lack_calc_data.json"}
 
 root = Tk()
 root.geometry("1200x680+100+35")
-root.iconbitmap(r"TimPack.ico")
+root.iconbitmap(r"D:\Python\UV_calc\TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
 
