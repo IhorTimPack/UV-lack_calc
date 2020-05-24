@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter import messagebox
 # from tkinter import filedialog
 import json
+import time
+import os
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами из словаря.
@@ -538,7 +540,12 @@ def manage_profiles():
     manage_text_path_name = Label(manage_profiles_window, text="Путь, по которому размещаются конфигурационные: файлы")
     manage_text_path = Label(manage_profiles_window, text=path_folder)
     manage_text_path_name.grid(row=0, column=0)
-    manage_text_path.grid(row=1, column=0)
+    manage_text_path.grid(row=0, column=1)
+
+    manage_text_test_file = Label(manage_profiles_window, text=path_profile)
+    manage_text_test = Label(manage_profiles_window, text=time.strftime('%d-%m-%Y  %H:%M', time.localtime(os.path.getmtime(path_profile))))
+    manage_text_test_file.grid(row=1, column=0)
+    manage_text_test.grid(row=1, column=1)
 
 
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
