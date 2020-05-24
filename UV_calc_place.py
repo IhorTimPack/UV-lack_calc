@@ -246,6 +246,7 @@ def confirm_saving():
     password_window = Toplevel(root)
     password_window.title("Введите пароль")
     password_window.geometry("280x90+200+100")
+    password_window.grab_set()
     password_entry = Entry(password_window, show="*", justify="center")
     password_entry.focus()  # Помещаем курсор в поле ввода пароля
     password_window.bind("<Return>", check_password)  # Можем подтвердить ввод пароля нажатием Enter
@@ -272,6 +273,7 @@ def create_profile():
     create_profile_window = Toplevel(root)
     create_profile_window.title("Введите название профиля")
     create_profile_window.geometry("320x90+200+100")
+    create_profile_window.grab_set()
     create_profile_entry = Entry(create_profile_window)
     create_profile_entry.focus()
     create_profile_window.bind("<Return>", save_profile)
@@ -288,6 +290,7 @@ def save_profile(*args):
     path_data = path_folder + "\\" + dic_name_file_profile[create_profile_entry.get()]
     save_data()
     save_list_profiles()
+    switch_profile()
     create_profile_window.destroy()
 
 
@@ -296,12 +299,13 @@ def save_profile(*args):
 def switch_profile():
     global path_data
     global selected_profile
-    selected_profile = price_type_profile.get()
-    path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]
-    load_data()
+    selected_profile = price_type_profile.get()  # Присваиваем значение выбранного профиля
+    type_profile_var.set(selected_profile)  # В переменную записываем название выбранного профиля для отображения в главном окне
+    path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к выбранному профилю
+    load_data()  # Загружаем в программу данные расценок выбранного профиля
+    check_filling()  # Пересчитываем расчет для выбранного профиля
     prices_pop_up.destroy()
     show_prices()
-    type_profile_var.set(selected_profile)
 
 
 # Функция отображения всех расценок
@@ -310,6 +314,8 @@ def show_prices():
     prices_pop_up = Toplevel(root)
     prices_pop_up.title("Расценки, нормы расхода")
     prices_pop_up.geometry("1200x680+100+35")
+    prices_pop_up.grab_set()
+    # prices_pop_up.lift(aboveThis=root)
     prices_window = Frame(prices_pop_up)
     prices_window.grid(row=0, column=0, padx=20, pady=20)
 
@@ -519,6 +525,22 @@ def show_prices():
     separator_line_3.place(x=0, y=432, width=500)
 
 
+# Функция формирует окно, в котором можно увидеть путь к файлам профилей, удалить ненужные профили
+def manage_profiles():
+    manage_profiles_pop_up = Toplevel(root)
+    manage_profiles_pop_up.title("Управление профилями")
+    manage_profiles_pop_up.geometry("1200x680+100+35")
+    manage_profiles_pop_up.grab_set()
+
+    manage_profiles_window = Frame(manage_profiles_pop_up)
+    manage_profiles_window.grid(row=0, column=0, padx=20, pady=20)
+
+    manage_text_path_name = Label(manage_profiles_window, text="Путь, по которому размещаются конфигурационные: файлы")
+    manage_text_path = Label(manage_profiles_window, text=path_folder)
+    manage_text_path_name.grid(row=0, column=0)
+    manage_text_path.grid(row=1, column=0)
+
+
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
 #  с расценками и загрузились расценки по умолчанию, прописанные в словарях в теле программы, спросить пользователя
 #  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем они использовались для расчетов.
@@ -669,6 +691,8 @@ menu_file = Menu(menubar)
 menu_edit = Menu(menubar)
 menubar.add_cascade(menu=menu_edit, label='Настройки')
 menu_edit.add_command(label='Расценки', command=show_prices)
+menu_edit.add_command(label='Управлениями профилями', command=manage_profiles)
+
 
 # Фрейм для размещения виджетов отчета расчета калькуляции
 report_frame = Frame(root, width=400, height=240)
