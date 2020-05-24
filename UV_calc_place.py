@@ -1,25 +1,20 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from tkinter import filedialog
+# from tkinter import filedialog
 import json
 
 
-# Функция для заполнения полей длины и ширины печатного листа типовыми размерами.
+# Функция для заполнения полей длины и ширины печатного листа типовыми размерами из словаря.
 def set_format(f):
-    # global width_sheet
-    # global length_sheet
-    width_sheet = dic_formats[f][0]
-    length_sheet = dic_formats[f][1]
     entry_width.delete(0, END)
     entry_length.delete(0, END)
-    entry_width.insert(0, width_sheet)
-    entry_length.insert(0, length_sheet)
+    entry_width.insert(0, dic_formats[f][0])
+    entry_length.insert(0, dic_formats[f][1])
 
 
 # Функция для очистки полей ввода и графиков перед очерендым просчётом
 def clean():
-    # global details_frame
     entry_width.delete(0, END)
     entry_length.delete(0, END)
     entry_amount.delete(0, END)
@@ -91,7 +86,7 @@ def calculate_result(i, amount):
 
 # Функция отрабатывает команду "Рассчитать". Запускается функцией "check filling".
 def calculate():
-    # Если один из размеров листа больше 500 мм, цены берем для второй категории заказа
+    # Если один из размеров листа больше 500 мм, цены берем для второй категории заказов
     if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
         i = 1
     else:
@@ -244,7 +239,7 @@ def details():
         details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
 
-# Функция создаёт окно пароля и запрашивает его ввод
+# Функция при сохранении профиля создаёт окно для ввода пароля и запрашивает его ввод
 def confirm_saving():
     global password_entry
     global password_window
@@ -270,6 +265,44 @@ def check_password(*args):
         password_entry.delete(0, END)
 
 
+# Функция создает окно для ввода имени создаваемого профиля
+def create_profile():
+    global create_profile_entry
+    global create_profile_window
+    create_profile_window = Toplevel(root)
+    create_profile_window.title("Введите название профиля")
+    create_profile_window.geometry("280x90+200+100")
+    create_profile_entry = Entry(create_profile_window)
+    create_profile_entry.focus()
+    create_profile_window.bind("<Return>", save_profile)
+    create_profile_button = Button(create_profile_window, text="Сохранить", command=save_profile)
+    create_profile_entry.pack(padx=5, pady=10)
+    create_profile_button.pack()
+
+
+# Функция добавляет в соответствующий словарь путь для вновь созданного профиля, даёт команду на сохранения файла
+# с расценками и файла с перечнем всех профилей
+def save_profile(*args):
+    global path_data
+    dic_name_file_profile[create_profile_entry.get()] = "UV_lack_calc_data_" + create_profile_entry.get() + ".json"
+    path_data = path_folder + "\\" + dic_name_file_profile[create_profile_entry.get()]
+    save_data()
+    save_list_profiles()
+    create_profile_window.destroy()
+
+
+# Функция считывает выбранное из раскрывающегося списка название профиля, формирует переменную с указанием пути к
+# файлу с профилем. Загружает данный профиль и обновляет данные окна разрушая и заново его создавая.
+def switch_profile():
+    global path_data
+    global selected_profile
+    selected_profile = price_type_profile.get()
+    path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]
+    load_data()
+    prices_pop_up.destroy()
+    show_prices()
+
+
 # Функция отображения всех расценок
 def show_prices():
     global prices_pop_up
@@ -279,8 +312,23 @@ def show_prices():
     prices_window = Frame(prices_pop_up)
     prices_window.grid(row=0, column=0, padx=20, pady=20)
 
-    price_button_save = Button(prices_window, text="Сохранить изменения", command=confirm_saving)
-    price_button_save.grid(row=0, column=0, sticky=EW)
+    price_button_save = Button(prices_window, text="Сохранить изменения в текущем профиле", command=confirm_saving)
+    price_button_save_another = Button(prices_window, text="Создать новый профиль и сохранить изменения", command=create_profile)
+    price_button_save.grid(row=21, column=0, sticky=EW)
+    price_button_save_another.grid(row=22, column=0, sticky=EW)
+
+    # Выбор профиля из раскрывающекося списка и загрузка его в программу.
+    global price_type_profile
+    price_type_profile = StringVar()
+    price_type_profile.set(selected_profile)
+    price_text_select = Label(prices_window, text="Загрузить другой профиль:")
+    price_text_title = Label(prices_window, text="Профиль: " + price_type_profile.get(), font="TkDefaultFont 9 bold italic")
+    price_text_select.grid(row=20, column=2, pady=5, columnspan=2)
+    price_text_title.grid(row=0, column=0)
+    price_button_type_profile = OptionMenu(prices_window, price_type_profile, *dic_name_file_profile)
+    price_button_type_profile.grid(row=21, column=2, columnspan=2, sticky=EW)
+    price_button_type_profile_confirm = Button(prices_window, text="Подтвердить", command=switch_profile)
+    price_button_type_profile_confirm.grid(row=22, column=2, columnspan=2, sticky=EW)
 
     price_text_column = Label(prices_window, text="Формат печатного листа", font="TkDefaultFont 8 bold")
     price_text_column_less_b3 = Label(prices_window, text="< В-3", font="TkDefaultFont 8 bold")
@@ -467,8 +515,19 @@ def show_prices():
 
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
 #  с расценками и загрузились расценки по умолчанию, прописанные в словарях в теле программы, спросить пользователя
-#  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем работали по ним.
+#  хочет ли он, что бы текущие расценки сохранялись и в дальнейшем они использовались для расчетов.
 def save_data():
+    global succcessful_load
+    if succcessful_load == False:
+        decide = messagebox.askyesno(message="""Обратите внимание. При открытии программы не
+    загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
+    использовать эти расценки. Все прошлые данные будут\nпотеряны. Убедитесь, что Вы сохраняете актуальные\nрасценки."""
+                                     , title="Сохранение расценок")
+        # Пользователь отказался записывать текущие расценки в файл *.json. Продолжаем работать с текущими расценками
+        # до момента закрытия текущей программы
+        if decide == False:
+            return
+    succcessful_load = True
     # Переписываем все расценки из полей ввода в соответствующие словари
     dic_all_prices["electricity"][0] = price_entry_electricity.get()
     dic_all_prices["electricity"][1] = price_entry_electricity.get()
@@ -500,34 +559,44 @@ def save_data():
     dic_type_client["хорошо"] = price_entry_client_well.get()
     dic_type_client["стандарт"] = price_entry_client_standart.get()
 
-    if succcessful_load == False:
-        decide = messagebox.askyesno(message="""Обратите внимание. При открытии программы не
-загрузились расценки. Программа использует расценки\nпо умолчанию. После сохранения программа будет
-использовать эти расценки. Все прошлые данные будут\nпотеряны. Убедитесь, что Вы сохраняете актуальные\nрасценки."""
-                                     , title="Сохранение расценок")
-        # Пользователь отказался записывать текущие расценки в файл *.json. Продолжаем работать с текущими расценками
-        # до момента закрытия текущей программы
-        if decide == False:
-            return
-    with open("UV_lack_calc_data.json", "w", encoding="utf-8") as write_data:
+    with open(path_data, "w", encoding="utf-8") as write_data:
         dic_s = {}
         dic_s.update(dic_all_prices)
         dic_s.update(dic_type_lack)
         dic_s.update(dic_type_client)
         json.dump(dic_s, write_data, ensure_ascii=False)
+    prices_pop_up.destroy()  # Закрываем окно после сохранения данных в файл.
 
 
-#  Функция для обновления всех расценок данными из файла *.json
+# Функция для сохранения списка доступных профилей в файл.
+def save_list_profiles():
+    with open(path_profile, "w", encoding="utf-8") as write_data:
+        dic_list = {}
+        dic_list.update(dic_name_file_profile)
+        json.dump(dic_list, write_data, ensure_ascii=False)
+
+
+# Функция для обновления всех расценок данными из файла *.json
 def load_data():
-    with open("UV_lack_calc_data.json", "r", encoding="utf-8") as load_all_data:
-        dic_l = json.load(load_all_data)
-        for i in dic_l:
-            if i in dic_all_prices:
-                dic_all_prices[i] = dic_l[i]
-            elif i in dic_type_lack:
-                dic_type_lack[i] = dic_l[i]
-            elif i in dic_type_client:
-                dic_type_client[i] = dic_l[i]
+    if succcessful_load == True:
+        global path_data
+        with open(path_data, "r", encoding="utf-8") as load_all_data:
+            dic_l = json.load(load_all_data)
+            for i in dic_l:
+                if i in dic_all_prices:
+                    dic_all_prices[i] = dic_l[i]
+                elif i in dic_type_lack:
+                    dic_type_lack[i] = dic_l[i]
+                elif i in dic_type_client:
+                    dic_type_client[i] = dic_l[i]
+
+
+# Функция для обновления списка профилей
+def load_profile():
+    global dic_name_file_profile
+    if succcessful_load == True:
+        with open(path_profile, "r", encoding="utf-8") as load_profile_list:
+            dic_name_file_profile = json.load(load_profile_list)
 
 
 # Словарь со всеми постоянными составляющими стоимости лакировки.
@@ -549,16 +618,26 @@ dic_formats = {"A4": [225, 320], "B4": [250, 350], "A3": [320, 450], "B3": [350,
 # Словарь. Считать или нет стоимость вывода пленок.
 dic_films_reused = {"новая": 1, "повторная или заказчика": 0}
 
+# Словарь для перечисления назвний всех сохраненных профилей и названий соответствующих файлов
+dic_name_file_profile = {"Основной": "UV_lack_calc_data.json"}
+
 root = Tk()
 root.geometry("1200x680+100+35")
-root.iconbitmap("TimPack.ico")
+root.iconbitmap(r"TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
 
-# При старте программы загружаем заданные в словарях расценки, на расценки из *.json
+# Формирование пути к файлу *.json с расценкам. При включении программы по умолчанию загружаем профиль "Основной".
+selected_profile = "Основной"
+path_folder = r"D:\Python\UV_calc"  # Путь к папке, в которой храняться все файлы *.json с настройками
+path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к файлу *.json с расценками
+path_profile = path_folder + "\\" + "UV_lack_calc_list_profiles.json"  # Путь к файлу *.json с перечнем профилей
+
+
+# При старте программы загружаем и меняем заданные в словарях в коде программы расценки, на расценки из *.json
 try:  # Проверяем, удалось ли нам загрузить расценки из фала *.json
-    load_data()
     succcessful_load = True  # Переменная показывает, что файл загрузился, расценки обновлены.
+    load_data()
 except:  # Загрузка данных не удалась.
     succcessful_load = False  # Переменная показывает, что файл не загрузился, расценки не обновлены.
     decide = messagebox.askyesno(message="""При открытии программы не удалось загрузить расценки.
@@ -569,34 +648,41 @@ except:  # Загрузка данных не удалась.
         show_prices()
         save_data()  # Создаём новый файл *.json, в котором будут расценки по умолчанию.
         prices_pop_up.destroy()
-    # print(os.path.getctime(r"D:\\Python\UV_calc\UV_calc_place.py"))
+
+# При старте программы загружаем и меняем заданные по умолчанию в словаре названия профилей.
+try:
+    load_profile()
+except:
+    if succcessful_load == True:
+        save_list_profiles()
+
 
 # Создание меню
 menubar = Menu(root)
 root["menu"] = menubar
 menu_file = Menu(menubar)
 menu_edit = Menu(menubar)
-menubar.add_cascade(menu=menu_file, label='Файл')
 menubar.add_cascade(menu=menu_edit, label='Настройки')
-menu_file.add_command(label='Save', command=save_data)
-menu_file.add_command(label='Load...', command=load_data)
 menu_edit.add_command(label='Расценки', command=show_prices)
 
 details_frame = Frame(root, width=400, height=1)
 details_frame.place(x=70, y=400)
 
-type_lack = StringVar()  # Раскрывающийся список для выбора типа лакировки
+# Раскрывающийся список для выбора типа лакировки
+type_lack = StringVar()
 type_lack.set("УФ-лак")
 button_type_lack = OptionMenu(root, type_lack, *dic_type_lack)
 button_type_lack.config(width=32)
 button_type_lack.place(x=30, y=10)
 
-type_client = StringVar()  # Раскрывающийся спсисок для выбора типа клиента
+# Раскрывающийся спсисок для выбора типа клиента
+type_client = StringVar()
 type_client.set("премиум")
 button_type_client = OptionMenu(root, type_client, *dic_type_client)  # Кнопка для выбора типа клиента
 button_type_client.place(x=170, y=42)
 
-film_reused = StringVar()  # Поле флажок, для выбора, считать ли в заказе пленку, или она повторная/заказчика
+# Поле флажок, для выбора, считать ли в заказе пленку, или она повторная/заказчика
+film_reused = StringVar()
 film_reused.set("новая")
 checkbutton_film_reused = Checkbutton(root, variable=film_reused, onvalue="новая",
                                       offvalue="повторная или заказчика")
