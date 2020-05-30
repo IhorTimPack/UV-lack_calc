@@ -1,10 +1,13 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 import json
 import time
 import os
 import os.path
+import cv2
+import pdf2image
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами из словаря.
@@ -73,7 +76,7 @@ def check_filling(*args):
 
 
 # Функция для вычисления итоговой стоимости выполнения лакировки
-def calculate_result(i, amount):
+def calculate_result(i, amount):  # Аргументы: тип заказа по размеру листа (> или < В3), тираж.
     answer = (float(dic_all_prices["adjustment_cost"][i]) + float(dic_all_prices["drum"][i]) + (
             float(entry_length.get()) * float(entry_width.get()) * float(entry_percents.get()) / 100000000 * float(
         dic_type_lack[type_lack.get()][1]) * float(dic_type_lack[type_lack.get()][0]) * float(
@@ -88,7 +91,7 @@ def calculate_result(i, amount):
 
 # Функция отрабатывает команду "Рассчитать". Запускается функцией "check filling".
 def calculate():
-    # Если один из размеров листа больше 500 мм, цены берем для второй категории заказов
+    # Если один из размеров листа больше 500 мм, цены берем для второй категории заказов "i=1"
     if int(entry_length.get()) > 500 or int(entry_width.get()) > 500:
         i = 1
     else:
@@ -241,14 +244,14 @@ def details():
         details_frame.config(height=1)  # сжимаем окно до 1 пикселя, что бы не отображалась подробная калькуляция
 
 
-# Функция при сохранении профиля создаёт окно для ввода пароля и запрашивает его ввод
+# Функция перед сохранением профиля создает окно в котором запрашивает пароль
 def confirm_saving():
     global password_entry
     global password_window
     password_window = Toplevel(root)
     password_window.title("Введите пароль")
     password_window.geometry("280x90+200+100")
-    password_window.grab_set()
+    password_window.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
     password_entry = Entry(password_window, show="*", justify="center")
     password_entry.focus()  # Помещаем курсор в поле ввода пароля
     password_window.bind("<Return>", check_password)  # Можем подтвердить ввод пароля нажатием Enter
@@ -262,7 +265,7 @@ def check_password(*args):
     if password_entry.get() == str(55555):
         save_data()
         password_window.destroy()
-    else: # Если пароль неверный поле ввода меняет цвет на красный на 0,3 сек и ждём повторного ввода пароля.
+    else:  # Если пароль неверный поле ввода меняет цвет на красный на 0,3 сек и ждём повторного ввода пароля.
         password_entry.config(bg="red")
         password_entry.after(300, lambda: password_entry.config(bg="white"))
         password_entry.delete(0, END)
@@ -276,7 +279,7 @@ def create_profile():
     create_profile_window = Toplevel(root)
     create_profile_window.title("Введите название профиля")
     create_profile_window.geometry("320x90+200+100")
-    create_profile_window.grab_set()
+    create_profile_window.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
     create_profile_entry = Entry(create_profile_window)
     create_profile_entry.focus()
     create_profile_window.bind("<Return>", save_profile)
@@ -323,7 +326,7 @@ def show_prices():
     prices_pop_up = Toplevel(root)
     prices_pop_up.title("Расценки, нормы расхода")
     prices_pop_up.geometry("1200x680+100+35")
-    prices_pop_up.grab_set()
+    prices_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
     prices_window = Frame(prices_pop_up)
     prices_window.grid(row=0, column=0, padx=20, pady=20)
 
@@ -531,6 +534,74 @@ def show_prices():
     separator_line_3.place(x=0, y=432, width=500)
 
 
+def load_picture_calculate_filling():
+    load_picture_pop_up = Toplevel(root)
+    load_picture_pop_up.title("Определение процента заполнения лаком печатного листа")
+    load_picture_pop_up.geometry("1200x680+100+35")
+    load_picture_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
+
+    load_picture_window = Frame(load_picture_pop_up)
+    load_picture_window.grid(row=0, column=0, padx=20, pady=20)
+
+    def askopenfile():
+        # global path_open_picture_file
+        path_open_picture_file = filedialog.askopenfilename()
+        # path_open_picture_file = path_open_picture_file.encode("utf-8")
+        print("path_open_picture_file: ", path_open_picture_file)
+        print("""path_open_picture_file.encode("utf-8"): """, path_open_picture_file.encode("utf-8"))
+
+        print(type(path_open_picture_file))
+        print(type(path_open_picture_file.encode("utf-8")))
+        l = len(path_open_picture_file)
+        print("l: ", l)
+        extension = path_open_picture_file[l-3:l+1].lower()
+        print("extension: ", extension)
+
+        if extension == "pdf":
+            images = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
+            images[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
+            image = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+
+        elif extension == "jpg":
+            image = cv2.imread(path_open_picture_file, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+            print(image)
+        width = 500  # Задаём ширину изображения в пикселях.
+        height = int(image.shape[0] * float(width) / image.shape[1])  # Пропорционально пересчитанная высота изображения
+        dim = (width, height)
+        median = 100  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
+        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)  # Пересчитываем изображение в нужные нам размеры
+        ret, resized_b_and_w = cv2.threshold(resized, median, 255,
+                                             cv2.THRESH_BINARY)  # Пересчитываем изображение в black and white
+        window_gray = u"Image converted to grayscale"
+        window_black = u"Image converted to black-and-white"
+        cv2.namedWindow(window_gray)
+        cv2.namedWindow(window_black)
+        cv2.moveWindow(window_gray, 120, 150)
+        cv2.moveWindow(window_black, 625, 150)
+        cv2.imshow(window_gray, resized)  # Выводим на монитор исходное grayscale изображение
+        cv2.imshow(window_black, resized_b_and_w)  # Выводим на монитор получившееся black and white изображение
+        non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
+        black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)))
+        print("Процент заполнения листа печатными элементами:", black_pixels_percent, "%")
+        answer = str(" Процент заполнения листа печатными элементами: " + str(black_pixels_percent) + "%")
+        load_picture_text_result_var = StringVar()
+        load_picture_text_result_var.set(answer)
+        load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
+        load_picture_text_result.grid(row=0, column=1)
+
+        cv2.waitKey(0)
+
+
+    load_picture_button_open_file = Button(load_picture_window, text="Открыть файл", command=askopenfile)
+    load_picture_button_open_file.grid(row=0, column=0)
+
+
+
+
+
+
+
+
 # Функция формирует окно, в котором можно увидеть путь к файлам профилей, увидеть список всех профилей, дату
 # последнего редактирования каждого профиля, статус (доступность) файла с настройками для каждого профиля ии удалить
 # ненужные профили.
@@ -538,7 +609,7 @@ def manage_profiles():
     manage_profiles_pop_up = Toplevel(root)
     manage_profiles_pop_up.title("Управление профилями")
     manage_profiles_pop_up.geometry("1200x680+100+35")
-    manage_profiles_pop_up.grab_set()
+    manage_profiles_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
 
     manage_profiles_window = Frame(manage_profiles_pop_up)
     manage_profiles_window.grid(row=0, column=0, padx=20, pady=20)
@@ -733,9 +804,10 @@ menubar = Menu(root)
 root["menu"] = menubar
 menu_file = Menu(menubar)
 menu_edit = Menu(menubar)
-menubar.add_cascade(menu=menu_edit, label='Настройки')
+menubar.add_cascade(menu=menu_edit, label='Меню')
 menu_edit.add_command(label='Расценки', command=show_prices)
 menu_edit.add_command(label='Управлениями профилями', command=manage_profiles)
+menu_edit.add_command(label='Определение % заполнения', command=load_picture_calculate_filling)
 
 
 # Фрейм для размещения виджетов отчета расчета калькуляции
