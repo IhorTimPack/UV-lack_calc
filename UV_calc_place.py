@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -7,6 +8,7 @@ import time
 import os
 import os.path
 import cv2
+import numpy
 import pdf2image
 
 
@@ -544,27 +546,19 @@ def load_picture_calculate_filling():
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
 
     def askopenfile():
-        # global path_open_picture_file
         path_open_picture_file = filedialog.askopenfilename()
-        # path_open_picture_file = path_open_picture_file.encode("utf-8")
-        print("path_open_picture_file: ", path_open_picture_file)
-        print("""path_open_picture_file.encode("utf-8"): """, path_open_picture_file.encode("utf-8"))
-
-        print(type(path_open_picture_file))
-        print(type(path_open_picture_file.encode("utf-8")))
         l = len(path_open_picture_file)
-        print("l: ", l)
         extension = path_open_picture_file[l-3:l+1].lower()
-        print("extension: ", extension)
-
         if extension == "pdf":
             images = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
             images[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
             image = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
-
         elif extension == "jpg":
-            image = cv2.imread(path_open_picture_file, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
-            print(image)
+            file_jpg = open(path_open_picture_file, "rb")
+            file_jpg_bites = bytearray(file_jpg.read())
+            numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
+            image = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+
         width = 500  # Задаём ширину изображения в пикселях.
         height = int(image.shape[0] * float(width) / image.shape[1])  # Пропорционально пересчитанная высота изображения
         dim = (width, height)
