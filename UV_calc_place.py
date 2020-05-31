@@ -536,6 +536,7 @@ def show_prices():
     separator_line_3.place(x=0, y=432, width=500)
 
 
+# Функция для загрузки изображения и определения % заполнения лаком печатного листа
 def load_picture_calculate_filling():
     load_picture_pop_up = Toplevel(root)
     load_picture_pop_up.title("Определение процента заполнения лаком печатного листа")
@@ -546,9 +547,9 @@ def load_picture_calculate_filling():
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
 
     def askopenfile():
-        path_open_picture_file = filedialog.askopenfilename()
+        path_open_picture_file = filedialog.askopenfilename() # Окно для нахождения файла изображения
         l = len(path_open_picture_file)
-        extension = path_open_picture_file[l-3:l+1].lower()
+        extension = path_open_picture_file[l-3:l+1].lower()  # Определение расширения открываемого файла
         if extension == "pdf":
             images = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
             images[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
@@ -558,6 +559,9 @@ def load_picture_calculate_filling():
             file_jpg_bites = bytearray(file_jpg.read())
             numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
             image = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+        else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
+            pass
+            # break
 
         width = 500  # Задаём ширину изображения в пикселях.
         height = int(image.shape[0] * float(width) / image.shape[1])  # Пропорционально пересчитанная высота изображения
@@ -583,16 +587,9 @@ def load_picture_calculate_filling():
         load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
         load_picture_text_result.grid(row=0, column=1)
 
-        cv2.waitKey(0)
-
 
     load_picture_button_open_file = Button(load_picture_window, text="Открыть файл", command=askopenfile)
     load_picture_button_open_file.grid(row=0, column=0)
-
-
-
-
-
 
 
 
