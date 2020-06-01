@@ -547,40 +547,42 @@ def load_picture_calculate_filling():
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
 
     def askopenfile():
-        path_open_picture_file = filedialog.askopenfilename() # Окно для нахождения файла изображения
+        path_open_picture_file = filedialog.askopenfilename() # Окно выбора файла изображения
         l = len(path_open_picture_file)
         extension = path_open_picture_file[l-3:l+1].lower()  # Определение расширения открываемого файла
         if extension == "pdf":
             images = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
             images[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
+            image_original = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
             image = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
         elif extension == "jpg":
-            file_jpg = open(path_open_picture_file, "rb")
+            file_jpg = open(path_open_picture_file, "rb")  # "Хитрая" загрузка .jpg файла, что бы не было проблем с кириллицей в пути к файлу
             file_jpg_bites = bytearray(file_jpg.read())
             numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
+            image_original = cv2.imdecode(numpyarray, cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
             image = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
         else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
             pass
             # break
-
-        width = 500  # Задаём ширину изображения в пикселях.
+        width = 400  # Задаём ширину изображения в пикселях.
         height = int(image.shape[0] * float(width) / image.shape[1])  # Пропорционально пересчитанная высота изображения
         dim = (width, height)
         median = 100  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
+        resized_original = cv2.resize(image_original, dim, interpolation=cv2.INTER_AREA)
         resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)  # Пересчитываем изображение в нужные нам размеры
         ret, resized_b_and_w = cv2.threshold(resized, median, 255,
                                              cv2.THRESH_BINARY)  # Пересчитываем изображение в black and white
-        window_gray = u"Image converted to grayscale"
-        window_black = u"Image converted to black-and-white"
-        cv2.namedWindow(window_gray)
-        cv2.namedWindow(window_black)
-        cv2.moveWindow(window_gray, 120, 150)
-        cv2.moveWindow(window_black, 625, 150)
-        cv2.imshow(window_gray, resized)  # Выводим на монитор исходное grayscale изображение
-        cv2.imshow(window_black, resized_b_and_w)  # Выводим на монитор получившееся black and white изображение
+
+        combined = numpy.concatenate((resized_original, cv2.cvtColor(resized, cv2.COLOR_GRAY2BGR), cv2.cvtColor(resized_b_and_w, cv2.COLOR_GRAY2BGR)), axis=1)
+        window_combined = u"Original image                                     " \
+                          u"                                                                 Grayscale image  " \
+                          u"                                                                   " \
+                          u"                                  Black and white image"
+        cv2.namedWindow(window_combined)
+        cv2.moveWindow(window_combined, 120, 120)
+        cv2.imshow(window_combined, combined)
         non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
         black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)))
-        print("Процент заполнения листа печатными элементами:", black_pixels_percent, "%")
         answer = str(" Процент заполнения листа печатными элементами: " + str(black_pixels_percent) + "%")
         load_picture_text_result_var = StringVar()
         load_picture_text_result_var.set(answer)
