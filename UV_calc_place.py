@@ -581,6 +581,8 @@ def load_picture_calculate_filling():
         cv2.namedWindow(window_combined)
         cv2.moveWindow(window_combined, 120, 120)
         cv2.imshow(window_combined, combined)
+        cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
         non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
         black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)))
         answer = str(" Процент заполнения листа печатными элементами: " + str(black_pixels_percent) + "%")
