@@ -124,7 +124,7 @@ def calculate():
         dic_all_prices["electricity"][i])) * float(entry_amount.get()) / float(dic_all_prices["speed"][i])):.2f}""")
     details_film_var.set(f"""{(float(dic_all_prices["film"][i]) * float(dic_films_reused[film_reused.get()])):.2f}""")
     details_drum_var.set(f"""{float(dic_all_prices["drum"][i]):.2f}""")
-    details_profit_var.set(f"""{(result - float(details_cost_lack_var.get())  - float(
+    details_profit_var.set(f"""{(result - float(details_cost_lack_var.get()) - float(
         details_salary_employee_var.get()) - float(details_electricity_var.get()) - float(
         details_film_var.get()) - float(details_drum_var.get())):.2f}""")
     details_time_var.set(f"""{(float(entry_amount.get()) / float(dic_all_prices["speed"][i]) + float(
@@ -195,16 +195,16 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
                                y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
                                width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку тиража
     canvas_graph_2.create_line(x0 + x_max, y0, x0 + x_max, y0 - (
-                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+            calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
                                width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "х" в точку удвоенного тиража
     canvas_graph_2.create_line(x0, y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
                                x0 + x_max / 2,
                                y0 - (calculate_result(i, entry_amount.get()) / float(entry_amount.get())) * scale_y,
                                width=1, dash=(4, 2), fill="grey")  # Пунктир на ось "у" в точку стоимости тиража
     canvas_graph_2.create_line(x0, y0 - (
-                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+            calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
                                x0 + x_max, y0 - (calculate_result(i, float(entry_amount.get()) * 2) / (
-                    float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
+                float(entry_amount.get()) * 2)) * scale_y, width=1, dash=(4, 2),
                                fill="grey")  # Пунктир на ось "у" в точку стоимости удвоенного тиража
     canvas_graph_2.create_line(x0, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, x0 + x_max + 10,
                                y0 - (calculate_result(i, 1000000) / 1000000) * scale_y, width=1, dash=(4, 2),
@@ -221,7 +221,7 @@ def draw_graph_one_sheet(i):  # Отрисовка графика ст-ти од
                                text=f"{(float((calculate_result(i, entry_amount.get()) / float(entry_amount.get())))):.3f}",
                                anchor=E, fill="red")  # Подпись на оси "у". Ст-ть при исходном тираже листов
     canvas_graph_2.create_text(x0 - 3, y0 - (
-                calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
+            calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2)) * scale_y,
                                text=f"{float((calculate_result(i, float(entry_amount.get()) * 2) / (float(entry_amount.get()) * 2))):.3f}",
                                anchor=E)  # Подпись на оси "у". Ст-ть при удвоенном тираже листов
     canvas_graph_2.create_text(x0 - 3, y0 - (calculate_result(i, 1000000) / 1000000) * scale_y,
@@ -308,14 +308,15 @@ def switch_profile(*args):
     global path_data
     global selected_profile
     selected_profile = price_type_profile.get()  # Присваиваем значение выбранного профиля
-    type_profile_var.set(selected_profile)  # В переменную записываем название выбранного профиля для отображения в главном окне
+    type_profile_var.set(
+        selected_profile)  # В переменную записываем название выбранного профиля для отображения в главном окне
     path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к выбранному профилю
     if os.path.isfile(path_data):
         load_data()  # Загружаем в программу данные расценок выбранного профиля
         check_filling()  # Пересчитываем расчет для выбранного профиля
         prices_pop_up.destroy()
         show_prices()
-    else: # Программа не нашло файл данными для данного профиля, берем данные из "Основного" профиля.
+    else:  # Программа не нашло файл данными для данного профиля, берем данные из "Основного" профиля.
         selected_profile = "Основной"
         check_filling()  # Пересчитываем расчет для выбранного профиля
         prices_pop_up.destroy()
@@ -333,7 +334,8 @@ def show_prices():
     prices_window.grid(row=0, column=0, padx=20, pady=20)
 
     price_button_save = Button(prices_window, text="Сохранить изменения в текущем профиле", command=confirm_saving)
-    price_button_save_another = Button(prices_window, text="Создать новый профиль и сохранить изменения", command=create_profile)
+    price_button_save_another = Button(prices_window, text="Создать новый профиль и сохранить изменения",
+                                       command=create_profile)
     price_button_save.grid(row=20, column=0, columnspan=2, padx=5, pady=10, sticky=EW)
     price_button_save_another.grid(row=21, column=0, columnspan=2, padx=5, sticky=EW)
 
@@ -342,10 +344,12 @@ def show_prices():
     price_type_profile = StringVar()
     price_type_profile.set(selected_profile)
     price_text_select = Label(prices_window, text="Сменить профиль:")
-    price_text_title = Label(prices_window, text="Профиль: " + price_type_profile.get(), font="TkDefaultFont 9 bold italic")
+    price_text_title = Label(prices_window, text="Профиль: " + price_type_profile.get(),
+                             font="TkDefaultFont 9 bold italic")
     price_text_select.grid(row=20, column=2, columnspan=2)
     price_text_title.grid(row=0, column=0)
-    price_button_type_profile = OptionMenu(prices_window, price_type_profile, *dic_name_file_profile, command=switch_profile)
+    price_button_type_profile = OptionMenu(prices_window, price_type_profile, *dic_name_file_profile,
+                                           command=switch_profile)
     price_button_type_profile.grid(row=21, column=2, columnspan=2, padx=5, sticky=EW)
 
     price_text_column = Label(prices_window, text="Формат печатного листа", font="TkDefaultFont 8 bold")
@@ -536,65 +540,89 @@ def show_prices():
     separator_line_3.place(x=0, y=432, width=500)
 
 
-# Функция для загрузки изображения и определения % заполнения лаком печатного листа
+# Функция создаёт окно в котором будет открываться файл с изображением и вычисляется % заполнения лаокм
 def load_picture_calculate_filling():
+    global load_picture_window
+    global load_picture_entry_median
+    global load_picture_text_result_var
     load_picture_pop_up = Toplevel(root)
     load_picture_pop_up.title("Определение процента заполнения лаком печатного листа")
     load_picture_pop_up.geometry("1200x680+100+35")
     load_picture_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
-
     load_picture_window = Frame(load_picture_pop_up)
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
-
-    def askopenfile():
-        path_open_picture_file = filedialog.askopenfilename() # Окно выбора файла изображения
-        l = len(path_open_picture_file)
-        extension = path_open_picture_file[l-3:l+1].lower()  # Определение расширения открываемого файла
-        if extension == "pdf":
-            images = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
-            images[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
-            image_original = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
-            image = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg", cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
-        elif extension == "jpg":
-            file_jpg = open(path_open_picture_file, "rb")  # "Хитрая" загрузка .jpg файла, что бы не было проблем с кириллицей в пути к файлу
-            file_jpg_bites = bytearray(file_jpg.read())
-            numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
-            image_original = cv2.imdecode(numpyarray, cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
-            image = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
-        else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
-            pass
-            # break
-        width = 400  # Задаём ширину изображения в пикселях.
-        height = int(image.shape[0] * float(width) / image.shape[1])  # Пропорционально пересчитанная высота изображения
-        dim = (width, height)
-        median = 100  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
-        resized_original = cv2.resize(image_original, dim, interpolation=cv2.INTER_AREA)
-        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)  # Пересчитываем изображение в нужные нам размеры
-        ret, resized_b_and_w = cv2.threshold(resized, median, 255,
-                                             cv2.THRESH_BINARY)  # Пересчитываем изображение в black and white
-
-        combined = numpy.concatenate((resized_original, cv2.cvtColor(resized, cv2.COLOR_GRAY2BGR), cv2.cvtColor(resized_b_and_w, cv2.COLOR_GRAY2BGR)), axis=1)
-        window_combined = u"Original image                                     " \
-                          u"                                                                 Grayscale image  " \
-                          u"                                                                   " \
-                          u"                                  Black and white image"
-        cv2.namedWindow(window_combined)
-        cv2.moveWindow(window_combined, 120, 120)
-        cv2.imshow(window_combined, combined)
-        cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-        cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
-        non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
-        black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)))
-        answer = str(" Процент заполнения листа печатными элементами: " + str(black_pixels_percent) + "%")
-        load_picture_text_result_var = StringVar()
-        load_picture_text_result_var.set(answer)
-        load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
-        load_picture_text_result.grid(row=0, column=1)
-
-
-    load_picture_button_open_file = Button(load_picture_window, text="Открыть файл", command=askopenfile)
+    load_picture_button_open_file = Button(load_picture_window, text="Открыть файл   *.jpg, *.pdf", command=askopenfile)
     load_picture_button_open_file.grid(row=0, column=0)
+    load_picture_button_change_median = Button(load_picture_window, text="Пересчитать",
+                                               command=lambda: show_opened_file(m=int(load_picture_entry_median.get())))
+    load_picture_button_change_median.grid(row=1, column=0)
+    load_picture_entry_median = Entry(load_picture_window)
+    load_picture_entry_median.insert(0, 100)
+    load_picture_entry_median.grid(row=1, column=1)
 
+    load_picture_text_result_var = StringVar()
+    load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
+    load_picture_text_result.grid(row=0, column=1)
+
+
+# Функция для загрузки изображения. определения формата изображения, преобразования изображения в grayscale
+def askopenfile():
+    global image_gray
+    global image_original
+    path_open_picture_file = filedialog.askopenfilename()  # Окно выбора файла изображения
+    l = len(path_open_picture_file)
+    extension = path_open_picture_file[l - 3:l + 1].lower()  # Определение расширения открываемого файла
+    if extension == "pdf":
+        file_pdf = pdf2image.convert_from_bytes(open(path_open_picture_file, 'rb').read())
+        file_pdf[0].save(path_folder + "\\" + "UV_lack_calc_image.jpg", 'JPEG')
+        image_original = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg",
+                                    cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
+        image_gray = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg",
+                                cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+    elif extension == "jpg":
+        file_jpg = open(path_open_picture_file,
+                        "rb")  # "Хитрая" загрузка .jpg файла, что бы не было проблем с кириллицей в пути к файлу
+        file_jpg_bites = bytearray(file_jpg.read())
+        numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
+        image_original = cv2.imdecode(numpyarray,
+                                      cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
+        image_gray = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+    else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
+        pass
+        # break
+    show_opened_file(m=int(load_picture_entry_median.get()))  # Запускаем функцию отображения изображения
+
+
+# Функция для отображения на экране окна выбранного изображения в трёх форматах: исходный, grayscale, black-and-wite
+# Так же определяется количество черных пикселов и высчитывается их процент от всех пикселей в изображении
+def show_opened_file(m):
+    cv2.destroyAllWindows()  # Разрушаем предыдущее окно, что бы текущее открылось поверх остальных
+    width = 399  # Задаём ширину изображения в пикселях.
+    height = int(
+        image_gray.shape[0] * float(width) / image_gray.shape[1])  # Пропорционально пересчитанная высота изображения
+    dim = (width, height)
+    median = m  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
+    resized_original = cv2.resize(image_original, dim, interpolation=cv2.INTER_AREA)
+    resized_gray = cv2.resize(image_gray, dim,
+                              interpolation=cv2.INTER_AREA)  # Пересчитываем изображение в нужные нам размеры
+    ret, resized_b_and_w = cv2.threshold(resized_gray, median, 255,
+                                         cv2.THRESH_BINARY)  # Пересчитываем изображение в black and white
+
+    combined = numpy.concatenate((resized_original, cv2.cvtColor(resized_gray, cv2.COLOR_GRAY2BGR),
+                                  cv2.cvtColor(resized_b_and_w, cv2.COLOR_GRAY2BGR)), axis=1)
+    non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
+    black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)), 1)
+    answer = str(" Процент заполнения листа печатными элементами:  " + str(black_pixels_percent) + "%")
+    load_picture_text_result_var.set(answer)
+    window_combined = u"Original image                                     " \
+                      u"                                                                 Grayscale image  " \
+                      u"                                                                   " \
+                      u"                                  Black and white image"
+    cv2.namedWindow(window_combined)
+    cv2.moveWindow(window_combined, 101, 180)
+    cv2.imshow(window_combined, combined)
+    cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
 
 
 # Функция формирует окно, в котором можно увидеть путь к файлам профилей, увидеть список всех профилей, дату
@@ -623,7 +651,8 @@ def manage_profiles():
     manage_text_path_name = Label(manage_profiles_window, text="Путь, по которому раcположены конфигурационные файлы:")
     manage_text_path = Label(manage_profiles_window, text=path_folder)
     manage_text_title_name = Label(manage_profiles_window, text="Название профиля", font="TkDefaultFont 8 bold")
-    manage_text_title_status = Label(manage_profiles_window, text="Состояние файла профиля", font="TkDefaultFont 8 bold")
+    manage_text_title_status = Label(manage_profiles_window, text="Состояние файла профиля",
+                                     font="TkDefaultFont 8 bold")
     manage_text_title_date = Label(manage_profiles_window, text="Дата изменения профиля", font="TkDefaultFont 8 bold")
     manage_text_path_name.grid(row=0, column=0, columnspan=2)
     manage_text_path.grid(row=0, column=2)
@@ -637,7 +666,8 @@ def manage_profiles():
         manage_text_file = Label(manage_profiles_window, text=i)
         manage_text_file.grid(row=j + 1, column=0)
         if os.path.isfile(path_temp):
-            manage_text_date = Label(manage_profiles_window, text=time.strftime('%d-%m-%Y  %H:%M', time.localtime(os.path.getmtime(path_temp))))
+            manage_text_date = Label(manage_profiles_window,
+                                     text=time.strftime('%d-%m-%Y  %H:%M', time.localtime(os.path.getmtime(path_temp))))
             manage_text_date.grid(row=j + 1, column=2)
             manage_text_status = Label(manage_profiles_window, text="Ок")
         else:
@@ -647,8 +677,9 @@ def manage_profiles():
     manage_type_profile = StringVar()
     manage_type_profile.set("Выберите профиль для удаления")
     # manage_type_profile.set(selected_profile)
-    manage_button_type_profile = OptionMenu(manage_profiles_window, manage_type_profile, *dic_name_file_profile, command=delete_profile)
-    manage_button_type_profile.grid(row=j+1, column=0)
+    manage_button_type_profile = OptionMenu(manage_profiles_window, manage_type_profile, *dic_name_file_profile,
+                                            command=delete_profile)
+    manage_button_type_profile.grid(row=j + 1, column=0)
 
 
 #  Функция для сохранения в файле *.json данных о всех расценках. Если программа открылась, не нашла файл *.json
@@ -771,7 +802,6 @@ path_folder = r"D:\Python\UV_calc"  # Путь к папке, в которой 
 path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к файлу *.json с расценками
 path_profile = path_folder + "\\" + "UV_lack_calc_list_profiles.json"  # Путь к файлу *.json с перечнем профилей
 
-
 # При старте программы загружаем и меняем заданные в словарях в коде программы расценки, на расценки из *.json
 try:  # Проверяем, удалось ли нам загрузить расценки из фала *.json
     succcessful_load = True  # Переменная показывает, что файл загрузился, расценки обновлены.
@@ -780,7 +810,8 @@ except:  # Загрузка данных не удалась.
     succcessful_load = False  # Переменная показывает, что файл не загрузился, расценки не обновлены.
     decide = messagebox.askyesno(message="""При открытии программы не удалось загрузить расценки.
 Будут использоваться расценки по умолчанию. Сохранить\nрасценки по умолчанию для дальнейшего использования,
-или Вы попробуете найти файл с настройками и вернуться\nк ним при следующей загрузке""", title="Проблемы с загрузкой данных.")
+или Вы попробуете найти файл с настройками и вернуться\nк ним при следующей загрузке""",
+                                 title="Проблемы с загрузкой данных.")
     if decide == True:  # Пользователь согласился перезаписать и использовать расценки по умолчанию.
         succcessful_load = True
         show_prices()
@@ -803,7 +834,6 @@ menubar.add_cascade(menu=menu_edit, label='Меню')
 menu_edit.add_command(label='Расценки', command=show_prices)
 menu_edit.add_command(label='Управлениями профилями', command=manage_profiles)
 menu_edit.add_command(label='Определение % заполнения', command=load_picture_calculate_filling)
-
 
 # Фрейм для размещения виджетов отчета расчета калькуляции
 report_frame = Frame(root, width=400, height=240)
@@ -888,11 +918,13 @@ report_percents = Label(report_frame, textvariable=report_percents_var, font="Tk
 report_percents_measure = Label(report_frame, text="%")
 report_cost_all_amount_name = Label(report_frame, text="Стоимость лакировки тиража:")
 report_cost_all_amount_var = StringVar()
-report_cost_all_amount = Label(report_frame, textvariable=report_cost_all_amount_var, font="TkDefaultFont 11 bold italic", fg="red")
+report_cost_all_amount = Label(report_frame, textvariable=report_cost_all_amount_var,
+                               font="TkDefaultFont 11 bold italic", fg="red")
 report_cost_all_amount_measure = Label(report_frame, text="грн.")
 report_cost_one_sheet_name = Label(report_frame, text="Стоимость лакировки одного листа:")
 report_cost_one_sheet_var = StringVar()
-report_cost_one_sheet = Label(report_frame, textvariable=report_cost_one_sheet_var, font="TkDefaultFont 11 bold italic", fg="red")
+report_cost_one_sheet = Label(report_frame, textvariable=report_cost_one_sheet_var, font="TkDefaultFont 11 bold italic",
+                              fg="red")
 report_cost_one_sheet_measure = Label(report_frame, text="грн.")
 
 # Размещение виджетов описания отчетов расчета калькуляции в координатах "report_frame"
@@ -927,7 +959,8 @@ details_cost_lack = Label(details_frame, textvariable=details_cost_lack_var, fon
 details_cost_lack_measure = Label(details_frame, text="грн.")
 details_salary_employee_name = Label(details_frame, text="Зарплата печатника:")
 details_salary_employee_var = StringVar()
-details_salary_employee = Label(details_frame, textvariable=details_salary_employee_var, font="TkDefaultFont 11 bold italic")
+details_salary_employee = Label(details_frame, textvariable=details_salary_employee_var,
+                                font="TkDefaultFont 11 bold italic")
 details_salary_employee_measure = Label(details_frame, text="грн.")
 details_electricity_name = Label(details_frame, text="Стоимость электричества:")
 details_electricity_var = StringVar()
