@@ -545,6 +545,7 @@ def load_picture_calculate_filling():
     global load_picture_window
     global load_picture_entry_median
     global load_picture_text_result_var
+    global load_picture_text_median
     load_picture_pop_up = Toplevel(root)
     load_picture_pop_up.title("Определение процента заполнения лаком печатного листа")
     load_picture_pop_up.geometry("1200x680+100+35")
@@ -553,16 +554,17 @@ def load_picture_calculate_filling():
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
     load_picture_button_open_file = Button(load_picture_window, text="Открыть файл   *.jpg, *.pdf", command=askopenfile)
     load_picture_button_open_file.grid(row=0, column=0, padx=10, pady=10)
-    load_picture_button_change_median = Button(load_picture_window, text="Пересчитать",
-                                               command=lambda: show_opened_file(m=int(load_picture_entry_median.get())))
-    load_picture_button_change_median.grid(row=0, column=1, padx=10, pady=10)
-    load_picture_entry_median = Entry(load_picture_window)
-    load_picture_entry_median.insert(0, 100)
-    load_picture_entry_median.grid(row=0, column=2, padx=10, pady=10)
+
+    load_picture_scale = ttk.Scale(load_picture_window, orient=HORIZONTAL, length=400,
+                                   from_=0.0, to=255.0, value=124.0, command=show_opened_file)
+    load_picture_scale.grid(row=0, column=1)
+
+    load_picture_text_median = Label(load_picture_window)
+    load_picture_text_median.grid(row=0, column=2)
 
     load_picture_text_result_var = StringVar()
     load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
-    load_picture_text_result.grid(row=1, column=0, columnspan=3)
+    load_picture_text_result.grid(row=1, column=0, columnspan=2, sticky=W)
 
 
 # Функция для загрузки изображения. определения формата изображения, преобразования изображения в grayscale
@@ -590,7 +592,7 @@ def askopenfile():
     else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
         pass
         # break
-    show_opened_file(m=int(load_picture_entry_median.get()))  # Запускаем функцию отображения изображения
+    show_opened_file(m=124)  # Запускаем функцию отображения изображения
 
 
 # Функция для отображения на экране окна выбранного изображения в трёх форматах: исходный, grayscale, black-and-wite
@@ -601,7 +603,8 @@ def show_opened_file(m):
     height = int(
         image_gray.shape[0] * float(width) / image_gray.shape[1])  # Пропорционально пересчитанная высота изображения
     dim = (width, height)
-    median = m  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
+    median = int(float(m))  # Граничное среднее значение цвета для перовода изображения цветовую систему black and white
+    load_picture_text_median.config(text=median)
     resized_original = cv2.resize(image_original, dim, interpolation=cv2.INTER_AREA)
     resized_gray = cv2.resize(image_gray, dim,
                               interpolation=cv2.INTER_AREA)  # Пересчитываем изображение в нужные нам размеры
@@ -612,7 +615,7 @@ def show_opened_file(m):
                                   cv2.cvtColor(resized_b_and_w, cv2.COLOR_GRAY2BGR)), axis=1)
     non_zero_pixels = cv2.countNonZero(resized_b_and_w)  # Подсчитываем количество белых пикселей
     black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)), 1)
-    answer = str(" Процент заполнения листа печатными элементами:  " + str(black_pixels_percent) + "%")
+    answer = str("Заполнение листа печатными элементами (чёрные пиксели на изображении black and white image):  " + str(black_pixels_percent) + "%")
     load_picture_text_result_var.set(answer)
     window_combined = u"Original image                                     " \
                       u"                                                                 Grayscale image  " \
@@ -798,7 +801,7 @@ root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся 
 
 # Формирование пути к файлу *.json с расценкам. При включении программы по умолчанию загружаем профиль "Основной".
 selected_profile = "Основной"
-path_folder = r"\\ORION\share\Program settings"  # Путь к папке, в которой храняться все файлы *.json с настройками
+path_folder = r"D:\Python"  # Путь к папке, в которой храняться все файлы *.json с настройками
 path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к файлу *.json с расценками
 path_profile = path_folder + "\\" + "UV_lack_calc_list_profiles.json"  # Путь к файлу *.json с перечнем профилей
 
