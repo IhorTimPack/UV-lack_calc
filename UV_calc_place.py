@@ -552,17 +552,17 @@ def load_picture_calculate_filling():
     load_picture_window = Frame(load_picture_pop_up)
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
     load_picture_button_open_file = Button(load_picture_window, text="Открыть файл   *.jpg, *.pdf", command=askopenfile)
-    load_picture_button_open_file.grid(row=0, column=0)
+    load_picture_button_open_file.grid(row=0, column=0, padx=10, pady=10)
     load_picture_button_change_median = Button(load_picture_window, text="Пересчитать",
                                                command=lambda: show_opened_file(m=int(load_picture_entry_median.get())))
-    load_picture_button_change_median.grid(row=1, column=0)
+    load_picture_button_change_median.grid(row=0, column=1, padx=10, pady=10)
     load_picture_entry_median = Entry(load_picture_window)
     load_picture_entry_median.insert(0, 100)
-    load_picture_entry_median.grid(row=1, column=1)
+    load_picture_entry_median.grid(row=0, column=2, padx=10, pady=10)
 
     load_picture_text_result_var = StringVar()
     load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
-    load_picture_text_result.grid(row=0, column=1)
+    load_picture_text_result.grid(row=1, column=0, columnspan=3)
 
 
 # Функция для загрузки изображения. определения формата изображения, преобразования изображения в grayscale
@@ -585,7 +585,7 @@ def askopenfile():
         file_jpg_bites = bytearray(file_jpg.read())
         numpyarray = numpy.asarray(file_jpg_bites, dtype=numpy.uint8)
         image_original = cv2.imdecode(numpyarray,
-                                      cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
+                                      cv2.IMREAD_COLOR)  # Загружаем изображения с родной цветовой схемой
         image_gray = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
     else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
         pass
@@ -792,13 +792,13 @@ dic_name_file_profile = {"Основной": "UV_lack_calc_data.json"}
 
 root = Tk()
 root.geometry("1200x680+100+35")
-root.iconbitmap(r"D:\Python\UV_calc\TimPack.ico")
+root.iconbitmap(r"D:\Python\TimPack.ico")
 root.title("Расчёт стоимости УФ-лакировки")
 root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся меню "неотрывными" от основного окна
 
 # Формирование пути к файлу *.json с расценкам. При включении программы по умолчанию загружаем профиль "Основной".
 selected_profile = "Основной"
-path_folder = r"D:\Python\UV_calc"  # Путь к папке, в которой храняться все файлы *.json с настройками
+path_folder = r"\\ORION\share\Program settings"  # Путь к папке, в которой храняться все файлы *.json с настройками
 path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к файлу *.json с расценками
 path_profile = path_folder + "\\" + "UV_lack_calc_list_profiles.json"  # Путь к файлу *.json с перечнем профилей
 
