@@ -546,13 +546,14 @@ def load_picture_calculate_filling():
     global load_picture_entry_median
     global load_picture_text_result_var
     global load_picture_text_median
+    global load_picture_button_open_file
     load_picture_pop_up = Toplevel(root)
     load_picture_pop_up.title("Определение процента заполнения лаком печатного листа")
     load_picture_pop_up.geometry("1200x680+100+35")
     load_picture_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
     load_picture_window = Frame(load_picture_pop_up)
     load_picture_window.grid(row=0, column=0, padx=20, pady=20)
-    load_picture_button_open_file = Button(load_picture_window, text="Открыть файл   *.jpg, *.pdf", command=askopenfile)
+    load_picture_button_open_file = Button(load_picture_window, text="Открыть файл   *.jpg, *.pdf", command=ask_open_picture)
     load_picture_button_open_file.grid(row=0, column=0, padx=10, pady=10)
 
     load_picture_scale = ttk.Scale(load_picture_window, orient=HORIZONTAL, length=400,
@@ -568,9 +569,10 @@ def load_picture_calculate_filling():
 
 
 # Функция для загрузки изображения. определения формата изображения, преобразования изображения в grayscale
-def askopenfile():
+def ask_open_picture():
     global image_gray
     global image_original
+    unsupport_format = 0
     path_open_picture_file = filedialog.askopenfilename()  # Окно выбора файла изображения
     l = len(path_open_picture_file)
     extension = path_open_picture_file[l - 3:l + 1].lower()  # Определение расширения открываемого файла
@@ -590,9 +592,12 @@ def askopenfile():
                                       cv2.IMREAD_COLOR)  # Загружаем изображения с родной цветовой схемой
         image_gray = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
     else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
-        pass
-        # break
-    show_opened_file(m=124)  # Запускаем функцию отображения изображения
+        unsupport_format = 1
+    if unsupport_format == 0:
+        show_opened_file(m=124)  # Запускаем функцию отображения изображения
+    else:
+        load_picture_button_open_file.config(bg="red")
+        load_picture_button_open_file.after(300, lambda: load_picture_button_open_file.config(bg="#EEEEEE"))
 
 
 # Функция для отображения на экране окна выбранного изображения в трёх форматах: исходный, grayscale, black-and-wite
