@@ -539,6 +539,17 @@ def show_prices():
     separator_line_2.place(x=312, y=432, height=90)
     separator_line_3.place(x=0, y=432, width=500)
 
+def help_user():
+    help_user_pop_up = Toplevel(root)
+    help_user_pop_up.title("Описание работы с программой")
+    help_user_pop_up.geometry("1200x680+100+35")
+    help_user_pop_up.grab_set()  # Не позволяет работать с другим окном, пока это окно не закрыто
+    help_user_window = Frame(help_user_pop_up)
+    help_user_window.grid(row=0, column=0, padx=20, pady=20)
+    help_user_window_text = Text(help_user_window, width=145, height=38, wrap=WORD, bg="#EEEEEE")
+    help_user_text = "Включите и работайте. Наслаждайтесь"
+    help_user_window_text.insert(1.0, help_user_text)
+    help_user_window_text.grid(row=0, column=0)
 
 # Функция создаёт окно в котором будет открываться файл с изображением и вычисляется % заполнения лаокм
 def load_picture_calculate_filling():
@@ -837,11 +848,14 @@ except:
 menubar = Menu(root)
 root["menu"] = menubar
 menu_file = Menu(menubar)
-menu_edit = Menu(menubar)
-menubar.add_cascade(menu=menu_edit, label='Меню')
-menu_edit.add_command(label='Расценки', command=show_prices)
-menu_edit.add_command(label='Управлениями профилями', command=manage_profiles)
-menu_edit.add_command(label='Определение % заполнения', command=load_picture_calculate_filling)
+menu_help = Menu(menubar)
+menubar.add_cascade(menu=menu_file, label='Меню')
+menubar.add_cascade(menu=menu_help, label='Помощь')
+menu_file.add_command(label='Расценки', command=show_prices)
+menu_file.add_command(label='Управлениями профилями', command=manage_profiles)
+menu_file.add_command(label='Определение % заполнения', command=load_picture_calculate_filling)
+menu_help.add_command(label='Особенности работы с программой', command=help_user)
+menu_help.add_command(label='Особенности архитектуры программы', command=help_user)
 
 # Фрейм для размещения виджетов отчета расчета калькуляции
 report_frame = Frame(root, width=400, height=240)
