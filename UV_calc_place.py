@@ -10,6 +10,7 @@ import os.path
 import cv2
 import numpy
 import pdf2image
+import PyPDF2
 
 
 # Функция для заполнения полей длины и ширины печатного листа типовыми размерами из словаря.
@@ -603,6 +604,8 @@ def load_picture_calculate_filling():
 def ask_open_picture():
     global image_gray
     global image_original
+    global pdf_width
+    global pdf_height
     unsupport_format = 0
     path_open_picture_file = filedialog.askopenfilename()  # Окно выбора файла изображения
     l = len(path_open_picture_file)
@@ -614,6 +617,13 @@ def ask_open_picture():
                                     cv2.IMREAD_UNCHANGED)  # Загружаем изображения с родной цветовой схемой
         image_gray = cv2.imread(path_folder + "\\" + "UV_lack_calc_image.jpg",
                                 cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+
+        know_size = PyPDF2.PdfFileReader(open(path_open_picture_file, 'rb'))  # Открываем файл для определения размеров листа
+        pdf_width = round((float(know_size.getPage(0).mediaBox.getWidth()) * 0.35277778), 1)
+        pdf_height = round((float(know_size.getPage(0).mediaBox.getHeight()) * 0.35277778), 1)
+        print(pdf_width)
+        print(pdf_height)
+
     elif extension == "jpg":
         file_jpg = open(path_open_picture_file,
                         "rb")  # "Хитрая" загрузка .jpg файла, что бы не было проблем с кириллицей в пути к файлу
