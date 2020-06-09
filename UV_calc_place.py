@@ -577,6 +577,7 @@ def load_picture_calculate_filling():
     global load_picture_window
     global load_picture_entry_median
     global load_picture_text_result_var
+    global load_picture_text_size_var
     global load_picture_text_median
     global load_picture_button_open_file
     load_picture_pop_up = Toplevel(root)
@@ -599,6 +600,10 @@ def load_picture_calculate_filling():
     load_picture_text_result = Label(load_picture_window, textvariable=load_picture_text_result_var)
     load_picture_text_result.grid(row=1, column=0, columnspan=2, sticky=W)
 
+    load_picture_text_size_var = StringVar()
+    load_picture_text_size = Label(load_picture_window, textvariable=load_picture_text_size_var)
+    load_picture_text_size.grid(row=2, column=0, columnspan=2, sticky=W)
+
 
 # Функция для загрузки изображения. определения формата изображения, преобразования изображения в grayscale
 def ask_open_picture():
@@ -606,7 +611,9 @@ def ask_open_picture():
     global image_original
     global pdf_width
     global pdf_height
+    global pdf_size
     unsupport_format = 0
+    pdf_size = str()
     path_open_picture_file = filedialog.askopenfilename()  # Окно выбора файла изображения
     l = len(path_open_picture_file)
     extension = path_open_picture_file[l - 3:l + 1].lower()  # Определение расширения открываемого файла
@@ -621,8 +628,7 @@ def ask_open_picture():
         know_size = PyPDF2.PdfFileReader(open(path_open_picture_file, 'rb'))  # Открываем файл для определения размеров листа
         pdf_width = round((float(know_size.getPage(0).mediaBox.getWidth()) * 0.35277778), 1)
         pdf_height = round((float(know_size.getPage(0).mediaBox.getHeight()) * 0.35277778), 1)
-        print(pdf_width)
-        print(pdf_height)
+        pdf_size = str("Размер изображения: " + str(pdf_width) + " мм х " + str(pdf_height) + " мм.")
 
     elif extension == "jpg":
         file_jpg = open(path_open_picture_file,
@@ -632,6 +638,7 @@ def ask_open_picture():
         image_original = cv2.imdecode(numpyarray,
                                       cv2.IMREAD_COLOR)  # Загружаем изображения с родной цветовой схемой
         image_gray = cv2.imdecode(numpyarray, cv2.IMREAD_GRAYSCALE)  # Загружаем изображения как grayscale
+
     else:  # Если открываемый файл неподдерживаемого формата, прекращаем выполнение вычисления
         unsupport_format = 1
     if unsupport_format == 0:
@@ -663,12 +670,13 @@ def show_opened_file(m):
     black_pixels_percent = round(100 - (non_zero_pixels * 100 / (width * height)), 1)
     answer = str("Заполнение листа печатными элементами (чёрные пиксели на изображении black and white image):  " + str(black_pixels_percent) + "%")
     load_picture_text_result_var.set(answer)
+    load_picture_text_size_var.set(pdf_size)
     window_combined = u"Original image                                     " \
                       u"                                                                 Grayscale image  " \
                       u"                                                                   " \
                       u"                                  Black and white image"
     cv2.namedWindow(window_combined)
-    cv2.moveWindow(window_combined, 101, 180)
+    cv2.moveWindow(window_combined, 101, 200)
     cv2.imshow(window_combined, combined)
     cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.setWindowProperty(window_combined, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_NORMAL)
@@ -847,7 +855,7 @@ root.option_add('*tearOff', FALSE)  # Делаем раскрывающиеся 
 
 # Формирование пути к файлу *.json с расценкам. При включении программы по умолчанию загружаем профиль "Основной".
 selected_profile = "Основной"
-path_folder = r"D:\Python"  # Путь к папке, в которой храняться все файлы *.json с настройками
+path_folder = r"\\ORION\share\Program settings"  # Путь к папке, в которой храняться все файлы *.json с настройками
 path_data = path_folder + "\\" + dic_name_file_profile[selected_profile]  # Путь к файлу *.json с расценками
 path_profile = path_folder + "\\" + "UV_lack_calc_list_profiles.json"  # Путь к файлу *.json с перечнем профилей
 
@@ -1134,21 +1142,21 @@ help_user_text = """  Программа UV_lack_calc предназначена
   Так же у пользователя есть возможность удалить любой профиль кроме "Основного", нажатием соответствующей кнопки.
 
   Для определения процента заполнения лаком печатного листа выбираем: "Меню - Определение процента заполнения".
-  В открывшемся окне нажимаем кнопку "Открыть файл...". Выбираем файл с изображением области выборочного лакирования. На данный момент 
-поддерживаются файлы в форматах *.jpg и *.pdf. При выборе многостраничного файла формата *.pdf откроется первая его страница. Если файл 
-корректно прочитался на экране появится окно с тремя изображениями. Оригинальное изображение, изображение, преобразованное к формату grayscale 
-(в оттенках  серого) и изображение в формате black and white (чёрно-белое). Все чёрные пиксели с изображения black and white будут считаться как 
-область лакирования и сразу над картинкой будет отображаться информация о процентном соотношении чёрных (лакируемых) элементов к общему 
-количеству элементов на печатном листе. Если в исходном файле область лакирования была отображена каким-либо светлым цветом и при пересчёте в 
-систему black and white была переведена в белый цвет, воспользуйтесь ползунком в верхней части экрана и сместите его в одну или другую сторону 
-для изменения серединной точки, которую программа использует для пересчета каждого пикселя изображения в чёрный или белый цвет. Постарайтесь 
-достичь необходимого для вас результата.
+  В открывшемся окне нажимаем кнопку "Открыть файл...". Выбираем файл с изображением области выборочного лакирования. В текущей версии программы 
+поддерживаются файлы в форматах *.jpg и *.pdf. При выборе многостраничного файла формата *.pdf откроется первая его страница.
+  Если файл корректно прочитался на экране появится окно с тремя изображениями. Оригинальное изображение, изображение, преобразованное к формату
+grayscale (в оттенках  серого) и изображение в формате black and white (чёрно-белое). Все чёрные пиксели с изображения black and white будут 
+считаться как область лакирования и сразу над картинкой будет отображаться информация о процентном соотношении чёрных (лакируемых) элементов к
+общему количеству элементов на печатном листе. Если пользователь открывает файл *.pdf на экран будет выведена информация о размере страницы.
+  Если в исходном файле область лакирования была отображена каким-либо светлым цветом и при пересчёте в систему black and white была переведена 
+в белый цвет, воспользуйтесь ползунком в верхней части экрана и сместите его в одну или другую сторону для изменения серединной точки, которую
+программа использует для пересчета каждого пикселя изображения в чёрный или белый цвет. Постарайтесь достичь необходимого для вас результата.
   Будьте внимательны с полученным значением. Оно не обязательно указывает на процент содержания печатных элементов к формату печатного листа.
 Данное значение высчитывается по отношению к формату загруженной картинки. А это могут быть разные значения. Учтите этот важный момент при 
 переносе полученных данных в основное окне расчёта. 
 """
 
-help_advanced_user_text = """  Программа написана на языке программирования Python 3.8.
+help_advanced_user_text = """  Программа написана на языке программирования Python версии 3.8.
 В программе используются подключаемые библиотеки:
   tkinter - библиотека для построения графического интерфеса по принципу десктопных приложений.
   json - библиотека для работы с файлами типа *.json.
